@@ -1,0 +1,21 @@
+<Project>
+
+  <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <!-- EventSource 默认在非ASP.NET的AOT应用中是禁用的，这里重新启用它 -->
+    <EventSourceSupport>true</EventSourceSupport>
+
+    <!-- 确保发布时所有警告都能被显示 -->
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <!-- 忽略以下警告 -->
+    <NoWarn>$(NoWarn);IL2104</NoWarn>
+  </PropertyGroup>
+
+  <Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
+    <!-- 抑制已知的警告信息 -->
+    <ItemGroup>
+      <!-- https://github.com/rabbitmq/rabbitmq-dotnet-client/issues/1410 RabbitMQ这个问题正在issue中被追踪处理 -->
+      <IlcArg Include="--singlewarnassembly:RabbitMQ.Client" />
+    </ItemGroup>
+  </Target>
+
+</Project>
