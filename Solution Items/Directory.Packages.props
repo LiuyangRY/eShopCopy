@@ -1,6 +1,0 @@
-<Project>
-  <!-- 中央包管理 -->
-  <PropertyGroup>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-  </PropertyGroup>
-</Project>
