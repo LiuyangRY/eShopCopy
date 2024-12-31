@@ -5,7 +5,19 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0A0931BF-883A-4A3B-8C06-F4547A5C14A0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3AF739CD-81D8-428D-A08A-0A58372DEBF6}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+        Directory.Build.targets = Directory.Build.targets
+        Directory.Packages.props = Directory.Packages.props
+		NuGet.config = NuGet.config
+		README.md = README.md
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "src\WebApp\WebApp.csproj", "{A1E29253-7896-4E3C-9FF3-F8B98BA1B403}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.ServiceDefaults", "src\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj", "{D893B2F3-9F42-4E6A-8392-D8C9CF566C9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +32,10 @@ Global
 		{A1E29253-7896-4E3C-9FF3-F8B98BA1B403}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1E29253-7896-4E3C-9FF3-F8B98BA1B403}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1E29253-7896-4E3C-9FF3-F8B98BA1B403}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D893B2F3-9F42-4E6A-8392-D8C9CF566C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D893B2F3-9F42-4E6A-8392-D8C9CF566C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D893B2F3-9F42-4E6A-8392-D8C9CF566C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D893B2F3-9F42-4E6A-8392-D8C9CF566C9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A1E29253-7896-4E3C-9FF3-F8B98BA1B403} = {0A0931BF-883A-4A3B-8C06-F4547A5C14A0}
