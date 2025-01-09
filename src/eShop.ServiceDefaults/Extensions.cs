@@ -38,6 +38,13 @@ public static class Extensions
     {
         builder.AddDefaultHealthChecks();
         builder.ConfigureOpenTelemetry();
+        builder.Services.ConfigureHttpClientDefaults(http =>
+        {
+            // 开启可伸缩性
+            http.AddStandardResilienceHandler();
+            // 开启服务发现
+            http.AddServiceDiscovery();
+        });
         return builder;
     }
 
@@ -60,7 +67,7 @@ public static class Extensions
     /// <returns>宿主应用构建接口</returns>
     private static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
-        if (builder.Configuration["OpenTelemetry:enable"] == "true")
+        if (builder.Configuration["OpenTelemetry:enable"] != "True")
         {
             return builder;
         } 
@@ -119,15 +126,17 @@ public static class Extensions
     /// <returns>Web应用</returns>
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        app.MapPrometheusScrapingEndpoint();
         if (!app.Environment.IsDevelopment())
         {
             return app;
         }
-
+        
         app.MapHealthChecks("/health");
         app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = (check) => check.Tags.Contains("live") });
-
+        if (app.Configuration["OpenTelemetry:enable"] == "True")
+        {
+            app.MapPrometheusScrapingEndpoint();
+        } 
         return app;
     }
 }
