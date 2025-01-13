@@ -23,7 +23,7 @@ public static class Extensions
 
         // Http 和 Grpc 客户端注册
         builder.Services.AddHttpClient<CatalogService>(httpClient => httpClient.BaseAddress = new Uri("http://catalog-api"))
-            .AddApiVersion(1.0);
-            //.AddAuthToken();
+            .AddApiVersion(1.0)
+            .AddAuthToken();
     }
 }

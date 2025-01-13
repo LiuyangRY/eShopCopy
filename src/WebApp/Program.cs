@@ -1,13 +1,14 @@
-﻿using eShop.WebApp.Components;
+using eShop.WebApp.Components;
 using eShop.WebApp.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.AddServiceDefaults();
+builder.AddServiceDefaults();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.AddApplicationServices();
 
 var app = builder.Build();
-//app.MapDefaultEndpoints();
+
+app.MapDefaultEndpoints();
 
 // 配置Http请求管道
 if (!app.Environment.IsDevelopment())

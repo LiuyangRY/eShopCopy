@@ -25,6 +25,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy", "deploy", "{04275A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppComponents", "src\WebAppComponents\WebAppComponents.csproj", "{7D6BC1C7-1345-473D-93EC-2C965A7239E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.AppHost", "src\eShop.AppHost\eShop.AppHost.csproj", "{655AE69F-9C71-4231-8E5A-FB379AF05907}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.ServiceDefaults", "src\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj", "{68C291D3-7D69-47EC-A2C9-6FBC374E2AE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{7D6BC1C7-1345-473D-93EC-2C965A7239E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D6BC1C7-1345-473D-93EC-2C965A7239E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D6BC1C7-1345-473D-93EC-2C965A7239E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{655AE69F-9C71-4231-8E5A-FB379AF05907}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{655AE69F-9C71-4231-8E5A-FB379AF05907}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{655AE69F-9C71-4231-8E5A-FB379AF05907}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{655AE69F-9C71-4231-8E5A-FB379AF05907}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68C291D3-7D69-47EC-A2C9-6FBC374E2AE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68C291D3-7D69-47EC-A2C9-6FBC374E2AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68C291D3-7D69-47EC-A2C9-6FBC374E2AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68C291D3-7D69-47EC-A2C9-6FBC374E2AE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,5 +58,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A1E29253-7896-4E3C-9FF3-F8B98BA1B403} = {0A0931BF-883A-4A3B-8C06-F4547A5C14A0}
 		{7D6BC1C7-1345-473D-93EC-2C965A7239E0} = {0A0931BF-883A-4A3B-8C06-F4547A5C14A0}
+		{655AE69F-9C71-4231-8E5A-FB379AF05907} = {0A0931BF-883A-4A3B-8C06-F4547A5C14A0}
+		{68C291D3-7D69-47EC-A2C9-6FBC374E2AE5} = {0A0931BF-883A-4A3B-8C06-F4547A5C14A0}
 	EndGlobalSection
 EndGlobal
