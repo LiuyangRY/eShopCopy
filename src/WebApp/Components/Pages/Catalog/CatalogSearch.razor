@@ -1,0 +1,98 @@
+﻿@inject NavigationManager Nav
+@inject ICatalogService CatalogService
+
+@if (_catalogBrands is not null && _catalogTypes is not null)
+{
+    <div class="catalog-search">
+        <div class="catalog-search-header">
+            <img alt="filter" role="presentation" src="icons/filters.svg" />
+            筛选条件
+        </div>
+        <div class="catalog-search-types">
+            <div class="catalog-search-group">
+                <h3>品牌</h3>
+                <div class="catalog-search-group-tags">
+                    <a href="@BrandUri(null)" class="catalog-search-tag @(BrandId == null ? "active" : "")">
+                        全部
+                    </a>
+                    @foreach (var brand in _catalogBrands)
+                    {
+                        <a href="@BrandUri(brand.Id)" class="catalog-search-tag @(BrandId == brand.Id ? "active" : "")">
+                            @brand.Name
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="catalog-search-group-tags">
+                <a href="@TypeUri(null)" class="catalog-search-tag @(ItemTypeId == null ? "active" : "")">
+                    全部
+                </a>
+                @foreach (var itemType in _catalogTypes)
+                {
+                    <a href="@TypeUri(itemType.Id)" class="catalog-search-tag @(ItemTypeId == itemType.Id ? "active" : "")">
+                        @itemType.Name
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code{
+
+    /// <summary>
+    /// 目录品牌
+    /// </summary>
+    IEnumerable<CatalogBrand>? _catalogBrands;
+
+    /// <summary>
+    /// 目录类型
+    /// </summary>
+    IEnumerable<CatalogType>? _catalogTypes;
+
+    /// <summary>
+    /// 品牌id
+    /// </summary>
+    [Parameter]
+    public int? BrandId { get; set; }
+
+    /// <summary>
+    /// 类型id
+    /// </summary>
+    [Parameter]
+    public int? ItemTypeId { get; set; }
+
+    /// <summary>
+    /// 页面初始化
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        var brandsTask = CatalogService.GetCatalogBrandsAsync();
+        var typesTask = CatalogService.GetCatalogTypesAsync();
+        _catalogBrands = await brandsTask;
+        _catalogTypes = await typesTask;
+    }
+
+    /// <summary>
+    /// 品牌链接地址
+    /// </summary>
+    /// <param name="brandId">品牌id</param>
+    /// <returns>品牌链接地址</returns>
+    private string BrandUri(int? brandId) => Nav.GetUriWithQueryParameters(new Dictionary<string, object?>()
+    {
+        { "page", null },
+        { "brand", brandId }
+    });
+
+    /// <summary>
+    /// 类型链接地址
+    /// </summary>
+    /// <param name="typeId">类型id</param>
+    /// <returns>类型链接地址</returns>
+    private string TypeUri(int? typeId) => Nav.GetUriWithQueryParameters(new Dictionary<string, object?>()
+    {
+        { "page", null },
+        { "type", typeId }
+    });
+
+}

@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Components.Endpoints
+
+<div class="eshop-header @(IsCatalog ? "Home" : "")">
+    <div class="eshop-header-hero">
+        @{
+            var headerImage = IsCatalog ? "image/header-home.webp" : "image/header.webp";
+        }
+        <iamge role="presentation" src="@headerImage"/>
+    </div>
+    <div class="eshop-header-container">
+        <nav class="eshop-header-navbar">
+            <a class="logo logo-header" href="">
+                <img alt="AdventureWorks" src="images/logo-header.svg" class="logo logo-header"/>
+            </a>
+           
+            <UserMenu/>
+        </nav>
+        <div class="eshop-header-intro">
+            <h1>
+                <SectionOutlet SectionName="page-header-title"/>
+            </h1>
+            <p>
+                <SectionOutlet SectionName="page-header-subtitle"/>
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// Http请求上下文
+    /// </summary>
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    /// <summary>
+    /// 当前被访问的页面组件类型
+    /// </summary>
+    private Type? PageComponentType => HttpContext?.GetEndpoint()?.Metadata.OfType<ComponentTypeMetadata>().FirstOrDefault()?.Type;
+
+    /// <summary>
+    /// 是否分类页面
+    /// </summary>
+    private bool IsCatalog => false;
+}

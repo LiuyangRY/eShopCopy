@@ -1,0 +1,37 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using WebApp.Services
+@inject LogOutService LogOutService
+@inject NavigationManager Nav
+
+<AuthorizeView>
+    <Authorized>
+        <h3>@context.User.Identity?.Name</h3>
+        <div class="dropdown-button">
+            <span>
+                <img alt="UserIcon" role="presentation" src="icons/user.svg"/>
+            </span>
+            <div class="dropdown-content">
+                <a class="dropdown-item" href="user/orders">我的订单</a>
+                <form class="dropdown-item" method="post" action="user/logout" @formname="logout" @onsubmit="LogOutAsync">
+                    <AntiforgeryToken />
+                    <button typy="submit">注销</button>
+                </form>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a aria-label="Sign in" href="@Pages.User.LogIn.Url(Nav)">
+            <img alt="UserIcon" role="presentation" src="icons/user.svg" />
+        </a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    /// <summary>
+    /// Http请求上下文
+    /// </summary>
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    private Task LogOutAsync() => LogOutService.LogOutAsync(HttpContext!);
+}

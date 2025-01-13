@@ -1,0 +1,37 @@
+﻿@page "/user/login"
+@inject NavigationManager Nav
+@attribute [Authorize]
+
+@code {
+
+    /// <summary>
+    /// 返回链接地址
+    /// </summary>
+    [SupplyParameterFromForm]
+    public string? ReturnUrl { get; set; }
+
+    /// <summary>
+    /// Http请求上下文
+    /// </summary>
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    /// <summary>
+    /// 初始化页面逻辑
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        const string baseUrl = "/";
+        var returnUrl = ReturnUrl ?? baseUrl;
+        var url = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
+        Nav.NavigateTo(url.IsAbsoluteUri ? baseUrl : returnUrl);
+        await base.OnInitializedAsync();
+    }
+
+    /// <summary>
+    /// 获取携带返回地址的登录链接
+    /// </summary>
+    /// <param name="nav">导航管理</param>
+    /// <returns>携带返回地址的登录链接</returns>
+    public static string Url(NavigationManager nav) => $"user/login?returnUrl={Uri.EscapeDataString(nav.ToBaseRelativePath(nav.Uri))}";
+}

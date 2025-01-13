@@ -1,0 +1,86 @@
+﻿@page "/"
+@attribute [StreamRendering]
+@inject NavigationManager Nav
+@inject ICatalogService CatalogService
+
+<PageTitle>电子商城</PageTitle>
+<SectionContent SectionName="page-header-title">准备开始一场新的冒险了吗？</SectionContent>
+<SectionContent SectionName="page-header-subtitle">准备好最新的衣服和装备在即将到来的时节开启新的旅程吧。
+</SectionContent>
+
+<div class="catalog">
+    <CatalogSearch BrandId="@BrandId" ItemTypeId="ItemTypeId"/>
+
+    @if (_catalogResult is null)
+    {
+        <p>加载中...</p>
+    }
+    else
+    {
+        <div>
+            <div class="catalog-items">
+                @foreach (var item in _catalogResult.Data)
+                {
+                    <CatalogListItem Item="@item"/>
+                }
+            </div>
+
+            <div class="page-links">
+                @foreach (var pageIndex in GetVisiblePageIndexes(_catalogResult))
+                {
+                    var page = PageIndex == 1 ? null : PageIndex;
+                    <NavLink ActiveClass="active-page" Match="@NavLinkMatch.All"
+                             href="@Nav.GetUriWithQueryParameter("page", page)">@PageIndex</NavLink>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+
+    /// <summary>
+    /// 页面大小
+    /// </summary>
+    const int PageSize = 9;
+
+    /// <summary>
+    /// 页数
+    /// </summary>
+    [SupplyParameterFromQuery]
+    public int? PageIndex { get; set; }
+
+    /// <summary>
+    /// 品牌id
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "brand")]
+    public int? BrandId { get; set; }
+
+    /// <summary>
+    /// 目录类型id
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "type")]
+    public int? ItemTypeId { get; set; }
+
+    /// <summary>
+    /// 目录数据
+    /// </summary>
+    CatalogResult? _catalogResult;
+
+    /// <summary>
+    /// 获取显示的页数
+    /// </summary>
+    /// <param name="result">目录数据</param>
+    /// <returns>显示的页数</returns>
+    static IEnumerable<int> GetVisiblePageIndexes(CatalogResult result) => Enumerable.Range(1, (int)Math.Ceiling(1.0 * result.Count / PageSize));
+
+    /// <summary>
+    /// 页面初始化
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        var pageIndex = PageIndex.GetValueOrDefault(1) - 1;
+        _catalogResult = await CatalogService.GetCatalogItemsAsync(pageIndex, PageSize, BrandId, ItemTypeId);
+    }
+
+}

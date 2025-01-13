@@ -1,0 +1,28 @@
+﻿@inject IProductImageUrlProvider ProductImageUrlProvider
+
+<div class="catalog-item">
+    <a class="catalog-product" href="@CatalogItemHelper.Url(Item)" data-enhance-nav="false">
+        <span class="catalog-product-image">
+            <img alt="@Item.Name" src="@ProductImageUrlProvider.GetProductImageUrl(Item)"/>
+        </span>
+        <span class="catalog-product-content">
+            <span class="name">@Item.Name</span>
+            <span class="price">$@Item.Price.ToString("0.00")</span>
+        </span>
+    </a>
+</div>
+
+@code {
+    /// <summary>
+    /// 目录项
+    /// </summary>
+    [Parameter]
+    [EditorRequired]
+    public required CatalogItem Item { get; set; }
+    
+    /// <summary>
+    /// 是否已登录
+    /// </summary>
+    [Parameter]
+    public bool IsLoggedIn { get; set; }
+}
