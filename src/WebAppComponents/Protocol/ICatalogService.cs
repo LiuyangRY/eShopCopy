@@ -1,6 +1,6 @@
-﻿using WebAppComponents.Catalog;
+﻿using eShop.WebAppComponents.Catalog;
 
-namespace WebAppComponents.Protocol;
+namespace eShop.WebAppComponents.Protocol;
 
 /// <summary>
 /// 目录服务接口

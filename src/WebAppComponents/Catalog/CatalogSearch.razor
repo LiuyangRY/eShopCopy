@@ -1,5 +1,5 @@
 ﻿@inject NavigationManager Nav
-@inject ICatalogService CatalogService
+@inject CatalogService CatalogService
 
 @if (_catalogBrands is not null && _catalogTypes is not null)
 {
@@ -27,7 +27,7 @@
                 <a href="@TypeUri(null)" class="catalog-search-tag @(ItemTypeId == null ? "active" : "")">
                     全部
                 </a>
-                @foreach (var itemType in _catalogTypes)
+                @foreach (var itemType in _catalogTypes!)
                 {
                     <a href="@TypeUri(itemType.Id)" class="catalog-search-tag @(ItemTypeId == itemType.Id ? "active" : "")">
                         @itemType.Name

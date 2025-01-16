@@ -1,8 +1,8 @@
 ﻿using System.Net.Http.Json;
-using WebAppComponents.Catalog;
-using WebAppComponents.Protocol;
+using eShop.WebAppComponents.Catalog;
+using eShop.WebAppComponents.Protocol;
 
-namespace WebAppComponents.Services;
+namespace eShop.WebAppComponents.Services;
 
 /// <summary>
 /// 目录服务
@@ -10,11 +10,6 @@ namespace WebAppComponents.Services;
 /// <param name="httpClient">http客户端</param>
 public class CatalogService(HttpClient httpClient) : ICatalogService
 {
-    /// <summary>
-    /// 远程服务基本url
-    /// </summary>
-    private const string RemoteServiceBaseUrl = "api/catalog/";
-
     /// <summary>
     /// 获取目录数据 
     /// </summary>
@@ -36,8 +31,7 @@ public class CatalogService(HttpClient httpClient) : ICatalogService
     /// <returns>目录品牌</returns>
     public async Task<IEnumerable<CatalogBrand>> GetCatalogBrandsAsync()
     {
-        var uri = $"{RemoteServiceBaseUrl}catalogBrands";
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<CatalogBrand>>(uri);
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<CatalogBrand>>("/api/brand/all");
         return result!;
     }
 
@@ -47,8 +41,7 @@ public class CatalogService(HttpClient httpClient) : ICatalogService
     /// <returns>目录类型</returns>
     public async Task<IEnumerable<CatalogType>> GetCatalogTypesAsync()
     {
-        var uri = $"{RemoteServiceBaseUrl}catalogTypes";
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<CatalogType>>(uri);
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<CatalogType>>("/api/type/all");
         return result!;
     }
 
@@ -65,14 +58,13 @@ public class CatalogService(HttpClient httpClient) : ICatalogService
         string filterQs = string.Empty;
         if (typeId.HasValue)
         {
-            var brandQs = brandId.HasValue ? brandId.Value.ToString() : string.Empty;
-            filterQs = $"/type/{typeId.Value}/brand/{brandQs}";
+            filterQs = $"/type/{typeId.Value}";
         }
         else if (brandId.HasValue)
         {
-            filterQs = $"/type/all/brand/{brandId.Value}";
+            filterQs += $"/brand/{brandId.Value}";
         }
 
-        return $"{RemoteServiceBaseUrl}items{filterQs}?pageIndex={pageIndex}&pageSize={pageSize}";
+        return $"api/catalog/paging{filterQs}?pageIndex={pageIndex}&pageSize={pageSize}";
     }
 }

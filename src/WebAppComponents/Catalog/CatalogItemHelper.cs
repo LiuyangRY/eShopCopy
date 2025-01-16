@@ -1,4 +1,4 @@
-﻿namespace WebAppComponents.Catalog;
+﻿namespace eShop.WebAppComponents.Catalog;
 
 /// <summary>
 /// 目录项帮助类

@@ -4,16 +4,20 @@ var builder = DistributedApplication.CreateBuilder(args);
 builder.AddForwardedHeaders();
 
 var postgres = builder.AddPostgres("postgres")
-    .WithImage("ankana/pgvector")
+    .WithImage("ankane/pgvector")
     .WithImageTag("latest")
     .WithLifetime(ContainerLifetime.Persistent);
 
-var catalogDb = postgres.AddDatabase("catalog");
+var catalogDb = postgres.AddDatabase("catalogdb");
 
 var launchProfileName = GetHttpProtocolNameForEndpoint();
 
+var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
+    .WithReference(catalogDb);
+
 var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .WithReference(catalogApi);
 
 // 连接回调url
 webApp.WithEnvironment("CallBackUrl", webApp.GetEndpoint(launchProfileName));

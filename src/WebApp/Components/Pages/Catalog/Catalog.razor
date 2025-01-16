@@ -1,7 +1,7 @@
 ﻿@page "/"
 @attribute [StreamRendering]
 @inject NavigationManager Nav
-@inject ICatalogService CatalogService
+@inject CatalogService CatalogService
 
 <PageTitle>电子商城</PageTitle>
 <SectionContent SectionName="page-header-title">准备开始一场新的冒险了吗？</SectionContent>
@@ -38,7 +38,6 @@
 </div>
 
 @code {
-
     /// <summary>
     /// 页面大小
     /// </summary>

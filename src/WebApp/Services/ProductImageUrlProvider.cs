@@ -1,4 +1,4 @@
-﻿using WebAppComponents.Protocol;
+﻿using eShop.WebAppComponents.Protocol;
 
 namespace eShop.WebApp.Services;
 
