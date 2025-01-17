@@ -1,4 +1,5 @@
-﻿using eShop.Catalog.API.Helper.Builder;
+﻿using System.ComponentModel;
+using eShop.Catalog.API.Helper.Builder;
 using eShop.Catalog.API.Model;
 
 namespace eShop.Catalog.API.Apis;
@@ -35,6 +36,11 @@ public static class CatalogApi
             .WithName("根据类型id和品牌id获取目录分页数据")
             .WithSummary("根据类型id和品牌id获取目录分页数据列表")
             .WithDescription("根据类型id和品牌id获取目录分页数据列表")
+            .WithTags("目录");
+        api.MapGet("/{id:int}/pic", GetCatalogPictureById)
+            .WithName("获取目录图片")
+            .WithSummary("根据目录id获取目录图片")
+            .WithDescription("根据目录id获取目录图片")
             .WithTags("目录");
         return builder;
     }
@@ -93,6 +99,29 @@ public static class CatalogApi
     }
 
     /// <summary>
+    /// 根据目录id获取目录图片
+    /// </summary>
+    /// <param name="context">目录数据库上下文</param>
+    /// <param name="environment">Web宿主环境</param>
+    /// <param name="id">目录id</param>
+    /// <returns>目录图片</returns>
+    private static async Task<Results<PhysicalFileHttpResult, NotFound>> GetCatalogPictureById(CatalogContext context,
+        IWebHostEnvironment environment, [Description("目录id")] int id)
+    {
+        var catalog = await context.Catalogs.FindAsync(id);
+        if (catalog is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        var path = Path.Combine(environment.ContentRootPath, "pics", catalog.PictureFileName);
+        var imageFileExtension = Path.GetExtension(catalog.PictureFileName);
+        var mimeType = GetImageMimeTypeFromImageFileExtension(imageFileExtension);
+        var lastModified = File.GetLastWriteTimeUtc(path);
+        return TypedResults.PhysicalFile(path, mimeType, lastModified: lastModified);
+    }
+
+    /// <summary>
     /// 根据条件获取目录数据
     /// </summary>
     /// <param name="context">目录数据库上下文</param>
@@ -118,4 +147,24 @@ public static class CatalogApi
         return TypedResults.Ok(new PaginatedData<Model.Catalog>(paginationRequest.PageIndex, paginationRequest.PageSize,
             totalCount, catalogs));
     }
+
+    /// <summary>
+    /// 根据图片文件扩展名称获取MIME类型
+    /// </summary>
+    /// <param name="extension">图片文件扩展名称</param>
+    /// <returns>MIME类型</returns>
+    private static string GetImageMimeTypeFromImageFileExtension(string extension) => extension switch
+    {
+        ".png" => "image/png",
+        ".jpg" => "image/jpeg",
+        ".jpeg" => "image/jpeg",
+        ".gif" => "image/gif",
+        ".tiff" => "image/tiff",
+        ".bmp" => "image/bmp",
+        ".wmf" => "image/wmf",
+        ".jp2" => "image/jp2",
+        ".svg" => "image/svg+xml",
+        ".webp" => "image/webp",
+        _ => "application/octet-stream",
+    };
 }

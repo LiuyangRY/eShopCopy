@@ -1,4 +1,4 @@
-﻿namespace eShop.WebAppComponents.Catalog;
+﻿namespace eShop.WebAppComponents.Model;
 
 /// <summary>
 /// 目录

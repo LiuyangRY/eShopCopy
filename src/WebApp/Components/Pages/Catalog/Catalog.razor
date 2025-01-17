@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using eShop.WebAppComponents.Model
 @attribute [StreamRendering]
 @inject NavigationManager Nav
 @inject CatalogService CatalogService
@@ -9,7 +10,7 @@
 </SectionContent>
 
 <div class="catalog">
-    <CatalogSearch BrandId="@BrandId" ItemTypeId="ItemTypeId"/>
+    <CatalogSearch BrandId="@BrandId" TypeId="ItemTypeId"/>
 
     @if (_catalogResult is null)
     {

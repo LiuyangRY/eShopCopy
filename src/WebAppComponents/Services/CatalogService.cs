@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using eShop.WebAppComponents.Catalog;
+using eShop.WebAppComponents.Model;
 using eShop.WebAppComponents.Protocol;
 
 namespace eShop.WebAppComponents.Services;
@@ -60,7 +60,7 @@ public class CatalogService(HttpClient httpClient) : ICatalogService
         {
             filterQs = $"/type/{typeId.Value}";
         }
-        else if (brandId.HasValue)
+        if (brandId.HasValue)
         {
             filterQs += $"/brand/{brandId.Value}";
         }

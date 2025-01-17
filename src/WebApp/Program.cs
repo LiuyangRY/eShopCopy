@@ -22,4 +22,5 @@ app.UseAntiforgery();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+app.MapForwarder("/product-images/{id}", "http://catalog-api", "/api/catalog/{id}/pic");
 app.Run();

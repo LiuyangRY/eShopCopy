@@ -8,15 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Update="Catalog\CatalogListItem.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-    <Content Update="Catalog\CatalogSearch.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
   </ItemGroup>
 

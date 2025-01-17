@@ -1,4 +1,4 @@
-﻿using eShop.WebAppComponents.Catalog;
+﻿using eShop.WebAppComponents.Model;
 
 namespace eShop.WebAppComponents.Protocol;
 
