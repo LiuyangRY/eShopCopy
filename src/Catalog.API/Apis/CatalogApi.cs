@@ -10,6 +10,11 @@ namespace eShop.Catalog.API.Apis;
 public static class CatalogApi
 {
     /// <summary>
+    /// 目录Api标签名称
+    /// </summary>
+    private const string CatalogApiTagName = "目录";
+
+    /// <summary>
     /// 映射目录ApiV1
     /// </summary>
     /// <param name="builder">终结点路由构建类</param>
@@ -17,32 +22,59 @@ public static class CatalogApi
     public static IEndpointRouteBuilder MapCatalogApiV1(this IEndpointRouteBuilder builder)
     {
         var api = builder.MapGroup("api/catalog").HasApiVersion(1.0);
-        api.MapGet("/paging", GetPaginatedCatalog)
+        api.MapGet("/{id:int}", GetCatalogByIdAsync)
+            .WithName("根据目录id获取目录数据")
+            .WithSummary("根据目录id获取目录数据")
+            .WithDescription("根据目录id获取目录数据")
+            .WithTags(CatalogApiTagName);
+        api.MapGet("/paging", GetPaginatedCatalogAsync)
             .WithName("获取目录分页数据")
             .WithSummary("目录分页数据列表")
             .WithDescription("目录分页数据列表")
-            .WithTags("目录");
-        api.MapGet("/paging/type/{typeId:int}", GetPaginatedCatalogByTypeId)
+            .WithTags(CatalogApiTagName);
+        api.MapGet("/paging/type/{typeId:int}", GetPaginatedCatalogByTypeIdAsync)
             .WithName("根据类型id获取目录分页数据")
             .WithSummary("根据类型id获取目录分页数据列表")
             .WithDescription("根据类型id获取目录分页数据列表")
-            .WithTags("目录");
-        api.MapGet("/paging/brand/{brandId:int}", GetPaginatedCatalogByBrandId)
+            .WithTags(CatalogApiTagName);
+        api.MapGet("/paging/brand/{brandId:int}", GetPaginatedCatalogByBrandIdAsync)
             .WithName("根据品牌id获取目录分页数据")
             .WithSummary("根据品牌id获取目录分页数据列表")
             .WithDescription("根据品牌id获取目录分页数据列表")
-            .WithTags("目录");
-        api.MapGet("/paging/type/{typeId:int}/brand/{brandId:int}", GetPaginatedCatalogByTypeIdAndBrandId)
+            .WithTags(CatalogApiTagName);
+        api.MapGet("/paging/type/{typeId:int}/brand/{brandId:int}", GetPaginatedCatalogByTypeIdAndBrandIdAsync)
             .WithName("根据类型id和品牌id获取目录分页数据")
             .WithSummary("根据类型id和品牌id获取目录分页数据列表")
             .WithDescription("根据类型id和品牌id获取目录分页数据列表")
-            .WithTags("目录");
-        api.MapGet("/{id:int}/pic", GetCatalogPictureById)
+            .WithTags(CatalogApiTagName);
+        api.MapGet("/{id:int}/pic", GetCatalogPictureByIdAsync)
             .WithName("获取目录图片")
             .WithSummary("根据目录id获取目录图片")
             .WithDescription("根据目录id获取目录图片")
-            .WithTags("目录");
+            .WithTags(CatalogApiTagName);
         return builder;
+    }
+
+    /// <summary>
+    /// 根据目录id获取目录数据
+    /// </summary>
+    /// <param name="context">目录数据库上下文</param>
+    /// <param name="id">目录id</param>
+    /// <returns>目录数据</returns>
+    private static async Task<Results<Ok<Model.Catalog>, NotFound, BadRequest<ProblemDetails>>> GetCatalogByIdAsync(CatalogContext context,
+        [Description("目录id")] int id)
+    {
+        if (id <= 0)
+        {
+            return TypedResults.BadRequest<ProblemDetails>(new() { Detail = "目录id无效" });
+        }
+
+        var result = await context.Catalogs.FirstOrDefaultAsync(catalog => catalog.Id == id);
+        if (result is null)
+        {
+            return TypedResults.NotFound();
+        }
+        return TypedResults.Ok(result);
     }
 
     /// <summary>
@@ -51,7 +83,7 @@ public static class CatalogApi
     /// <param name="context">目录数据库上下文</param>
     /// <param name="paginationRequest">分页请求参数</param>
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalog(CatalogContext context,
+    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogAsync(CatalogContext context,
         [AsParameters] PaginationRequest paginationRequest)
     {
         return await GetCatalogByConditionAsync(context, paginationRequest);
@@ -64,7 +96,7 @@ public static class CatalogApi
     /// <param name="paginationRequest">分页请求参数</param>
     /// <param name="typeId">类型id</param>
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByTypeId(CatalogContext context,
+    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByTypeIdAsync(CatalogContext context,
         [AsParameters] PaginationRequest paginationRequest, int typeId)
     {
         return await GetCatalogByConditionAsync(context, paginationRequest, typeId: typeId);
@@ -77,7 +109,8 @@ public static class CatalogApi
     /// <param name="paginationRequest">分页请求参数</param>
     /// <param name="brandId">品牌id</param>
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByBrandId(CatalogContext context,
+    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByBrandIdAsync(
+        CatalogContext context,
         [AsParameters] PaginationRequest paginationRequest, int brandId)
     {
         return await GetCatalogByConditionAsync(context, paginationRequest, brandId: brandId);
@@ -91,7 +124,7 @@ public static class CatalogApi
     /// <param name="typeId">类型id</param>
     /// <param name="brandId">品牌id</param>
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByTypeIdAndBrandId(
+    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByTypeIdAndBrandIdAsync(
         CatalogContext context,
         [AsParameters] PaginationRequest paginationRequest, int typeId, int brandId)
     {
@@ -105,7 +138,8 @@ public static class CatalogApi
     /// <param name="environment">Web宿主环境</param>
     /// <param name="id">目录id</param>
     /// <returns>目录图片</returns>
-    private static async Task<Results<PhysicalFileHttpResult, NotFound>> GetCatalogPictureById(CatalogContext context,
+    private static async Task<Results<PhysicalFileHttpResult, NotFound>> GetCatalogPictureByIdAsync(
+        CatalogContext context,
         IWebHostEnvironment environment, [Description("目录id")] int id)
     {
         var catalog = await context.Catalogs.FindAsync(id);

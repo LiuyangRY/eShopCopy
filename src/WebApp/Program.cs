@@ -1,3 +1,4 @@
+using eShop.ServiceDefaults.Constant;
 using eShop.WebApp.Components;
 using eShop.WebApp.Extensions;
 
@@ -22,5 +23,6 @@ app.UseAntiforgery();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-app.MapForwarder("/product-images/{id}", "http://catalog-api", "/api/catalog/{id}/pic");
+app.MapForwarder("/product-images/{id}", ServiceConstant.CatalogApiUrl, "/api/catalog/{id}/pic");
+app.MapForwarder("/catalog/{id}", ServiceConstant.CatalogApiUrl, "/api/catalog/{id}");
 app.Run();
