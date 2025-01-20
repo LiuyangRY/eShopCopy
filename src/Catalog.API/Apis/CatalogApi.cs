@@ -69,7 +69,9 @@ public static class CatalogApi
             return TypedResults.BadRequest<ProblemDetails>(new() { Detail = "目录id无效" });
         }
 
-        var result = await context.Catalogs.FirstOrDefaultAsync(catalog => catalog.Id == id);
+        var result = await context.Catalogs.Include(catalog => catalog.CatalogBrand)
+            .Include(catalog => catalog.CatalogType)
+            .FirstOrDefaultAsync(catalog => catalog.Id == id);
         if (result is null)
         {
             return TypedResults.NotFound();

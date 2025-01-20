@@ -1,0 +1,67 @@
+﻿@page "/catalog/{catalogId:int}"
+@inject CatalogService CatalogService
+@inject IProductImageUrlProvider ProductImageUrlProvider
+
+@if (_catalog is not null)
+{
+    <PageTitle>@_catalog.Name</PageTitle>
+    <SectionContent SectionName="page-header-title">@_catalog.Name</SectionContent>
+    <SectionContent SectionName="page-header-subtitle">@_catalog.CatalogBrand?.Name</SectionContent>
+    
+    <div class="item-details">
+        <img alt="@_catalog.Name" src="@ProductImageUrlProvider.GetProductImageUrl(_catalog)"/>
+        <div class="description">
+            <p>@_catalog.Description</p>
+            <p>
+                品牌：<strong>@_catalog.CatalogBrand?.Name</strong>
+            </p>
+        </div>
+    </div>
+}
+else if (_notFound)
+{
+    <SectionContent SectionName="page-header-title">未发现</SectionContent>
+    <div class="item-details">
+        <p>不好意思，我们没有找到任何产品。</p>
+    </div>
+}
+
+@code{
+    /// <summary>
+    /// 目录
+    /// </summary>
+    private CatalogItem? _catalog;
+
+    /// <summary>
+    /// 是否没有查询到目录
+    /// </summary>
+    private bool _notFound;
+    
+    /// <summary>
+    /// 目录id
+    /// </summary>
+    [Parameter]
+    public int CatalogId { get; set; }
+    
+    /// <summary>
+    /// Http请求上下文
+    /// </summary>
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    /// <summary>
+    /// 页面初始化
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _catalog = await CatalogService.GetCatalogByIdAsync(CatalogId);
+        }
+        catch (HttpRequestException exception) when (exception.StatusCode == HttpStatusCode.NotFound)
+        {
+            HttpContext!.Response.StatusCode = 404;
+            _notFound = true;
+        }
+    }
+}

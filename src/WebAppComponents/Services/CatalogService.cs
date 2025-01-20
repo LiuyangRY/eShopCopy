@@ -11,6 +11,16 @@ namespace eShop.WebAppComponents.Services;
 public class CatalogService(HttpClient httpClient) : ICatalogService
 {
     /// <summary>
+    /// 根据目录id获取目录数据
+    /// </summary>
+    /// <param name="catalogId">目录id</param>
+    /// <returns>目录数据</returns>
+    public async Task<CatalogItem?> GetCatalogByIdAsync(int catalogId)
+    {
+        return await httpClient.GetFromJsonAsync<CatalogItem>($"/api/catalog/{catalogId}");
+    }
+    
+    /// <summary>
     /// 获取目录数据 
     /// </summary>
     /// <param name="pageIndex">页数</param>
