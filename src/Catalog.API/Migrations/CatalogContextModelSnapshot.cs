@@ -151,6 +151,37 @@ namespace eShop.Catalog.API.Migrations
                     b.ToTable("CatalogType", (string)null);
                 });
 
+            modelBuilder.Entity("eShop.IntegrationEventLogEF.Model.IntegrationEventLogEntry", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EventTypeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SentTimes")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("IntegrationEventLog", (string)null);
+                });
+
             modelBuilder.Entity("eShop.Catalog.API.Model.Catalog", b =>
                 {
                     b.HasOne("eShop.Catalog.API.Model.CatalogBrand", "CatalogBrand")

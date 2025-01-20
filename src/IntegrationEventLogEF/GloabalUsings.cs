@@ -1,0 +1,9 @@
+﻿global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations.Schema;
+global using System.Text.Json;
+global using Common.Helper;
+global using eShop.EventBus.Events;
+global using eShop.IntegrationEventLogEF.Model;
+global using eShop.IntegrationEventLogEF.Model.Enum;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Storage;

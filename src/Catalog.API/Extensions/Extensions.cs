@@ -1,4 +1,5 @@
 ﻿using eShop.Catalog.API.Infrastructure;
+using eShop.IntegrationEventLogEF.Services;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace eShop.Catalog.API.Extensions;
@@ -30,6 +31,8 @@ internal static class Extensions
         {
             builder.Services.AddMigration<CatalogContext, CatalogContextSeed>();
         }
+
+        builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<CatalogContext>>();
         builder.Services.AddOptions<CatalogOptions>()
             .BindConfiguration(nameof(CatalogOptions));
     }

@@ -8,7 +8,7 @@ using Pgvector;
 namespace eShop.Catalog.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitCatalogDatabase : Migration
+    public partial class InitalizeCatalogDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,23 @@ namespace eShop.Catalog.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CatalogType", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IntegrationEventLog",
+                columns: table => new
+                {
+                    EventId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EventTypeName = table.Column<string>(type: "text", nullable: false),
+                    State = table.Column<int>(type: "integer", nullable: false),
+                    SentTimes = table.Column<int>(type: "integer", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IntegrationEventLog", x => x.EventId);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,6 +127,9 @@ namespace eShop.Catalog.API.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Catalog");
+
+            migrationBuilder.DropTable(
+                name: "IntegrationEventLog");
 
             migrationBuilder.DropTable(
                 name: "CatalogBrand");

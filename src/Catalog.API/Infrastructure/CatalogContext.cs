@@ -1,5 +1,6 @@
 ﻿using eShop.Catalog.API.Infrastructure.EntityConfigurations;
 using eShop.Catalog.API.Model;
+using eShop.IntegrationEventLogEF.Extensions;
 
 namespace eShop.Catalog.API.Infrastructure;
 
@@ -40,6 +41,7 @@ public class CatalogContext : DbContext
         builder.ApplyConfiguration(new CatalogBrandEntityTypeConfiguration());
         builder.ApplyConfiguration(new CatalogTypeEntityTypeConfiguration());
         builder.ApplyConfiguration(new CatalogEntityConfiguration());
-        // builder.
+        // 将集成事件日志表添加到当前上下文中
+        builder.UseIntegrationEventLogs();
     }
 }

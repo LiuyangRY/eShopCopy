@@ -13,8 +13,8 @@ using eShop.Catalog.API.Infrastructure;
 namespace eShop.Catalog.API.Migrations
 {
     [DbContext(typeof(CatalogContext))]
-    [Migration("20250116074428_InitCatalogDatabase")]
-    partial class InitCatalogDatabase
+    [Migration("20250120033008_InitalizeCatalogDatabase")]
+    partial class InitalizeCatalogDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -152,6 +152,37 @@ namespace eShop.Catalog.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CatalogType", (string)null);
+                });
+
+            modelBuilder.Entity("eShop.IntegrationEventLogEF.Model.IntegrationEventLogEntry", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EventTypeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SentTimes")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("IntegrationEventLog", (string)null);
                 });
 
             modelBuilder.Entity("eShop.Catalog.API.Model.Catalog", b =>
