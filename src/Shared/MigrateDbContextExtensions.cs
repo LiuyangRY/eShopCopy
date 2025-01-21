@@ -71,7 +71,8 @@ public static class MigrateDbContextExtensions
         {
             logger.LogInformation($"迁移数据库，上下文：{typeof(TContext).Name}");
             var strategy = context.Database.CreateExecutionStrategy();
-            await strategy.ExecuteAsync(() => InvokeSeeder(seeder, context, scopedService));
+            var parameter = new SeederParameter<TContext>(seeder, context, serviceProvider);
+            await strategy.ExecuteAsync(parameter, InvokeSeeder);
         }
         catch (Exception exception)
         {
@@ -84,18 +85,14 @@ public static class MigrateDbContextExtensions
     /// <summary>
     /// 执行种子委托
     /// </summary>
-    /// <param name="seeder">种子委托</param>
-    /// <param name="context">数据库上下文</param>
-    /// <param name="serviceProvider">服务提供类</param>
-    /// <typeparam name="TContext">数据库上下文类型</typeparam>
-    private static async Task InvokeSeeder<TContext>(Func<TContext, IServiceProvider, Task> seeder, TContext context,
-        IServiceProvider serviceProvider) where TContext : DbContext
+    /// <param name="parameter">种子委托</param>
+    private static async Task InvokeSeeder<TContext>(SeederParameter<TContext> parameter) where TContext : DbContext
     {
         using var activity = ActivitySource.StartActivity($"迁移 {typeof(TContext).Name}");
         try
         {
-            await context.Database.MigrateAsync();
-            await seeder(context, serviceProvider);
+            await parameter.Context.Database.MigrateAsync();
+            await parameter.Seeder(parameter.Context, parameter.ServiceProvider);
         }
         catch (Exception exception)
         {
@@ -103,6 +100,18 @@ public static class MigrateDbContextExtensions
             throw;
         }
     }
+
+    /// <summary>
+    /// 种子委托参数
+    /// </summary>
+    /// <param name="Seeder">种子委托</param>
+    /// <param name="Context">数据库上下文</param>
+    /// <param name="ServiceProvider">服务提供类</param>
+    /// <typeparam name="TContext">数据库上下文类型</typeparam>
+    private record SeederParameter<TContext>(
+        Func<TContext, IServiceProvider, Task> Seeder,
+        TContext Context,
+        IServiceProvider ServiceProvider) where TContext : DbContext;
 
     /// <summary>
     /// 迁移宿主服务
