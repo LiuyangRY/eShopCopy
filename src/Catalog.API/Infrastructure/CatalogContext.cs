@@ -1,11 +1,11 @@
 ﻿using eShop.Catalog.API.Infrastructure.EntityConfigurations;
-using eShop.Catalog.API.Model;
+using eShop.Catalog.API.Models;
 using eShop.IntegrationEventLogEF.Extensions;
 
 namespace eShop.Catalog.API.Infrastructure;
 
 /// <summary>
-/// 目录上下文
+/// 目录上下文(dotnet ef migrations add --context CatalogContext InitializeCatalogDatabase)
 /// </summary>
 public class CatalogContext : DbContext
 {
@@ -19,7 +19,7 @@ public class CatalogContext : DbContext
     /// <summary>
     /// 目录
     /// </summary>
-    public DbSet<Model.Catalog> Catalogs { get; set; }
+    public DbSet<Models.Catalog> Catalogs { get; set; }
     
     /// <summary>
     /// 目录品牌

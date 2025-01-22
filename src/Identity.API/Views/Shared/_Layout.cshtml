@@ -1,0 +1,43 @@
+﻿@inject IConfiguration Configuration
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="x-ua-compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+    <title>认证 | AdventureWorks</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico"/>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+<body>
+<div class="eshop-banner">
+    <img alt="横幅" role="presentation" src="/images/banner.png"/>
+</div>
+<div class="eshop-header">
+    <div class="eshop-header-container">
+        <nav class="eshop-header-navbar">
+            <a href="@Configuration[ServiceConstant.WebAppName]" class="logo logo-header">
+                <img alt="AdventureWorks" src="images/logo-header.svg"/>
+            </a>
+        </nav>
+    </div>
+</div>
+<div class="content">
+    @RenderBody()
+</div>
+<footer class="eshop-footer">
+    <div class="eshop-footer-content">
+        <div class="eshop-footer-row">
+            <img alt="图标" role="presentation" src="images/logo-footer.svg" class="logo logo-footer"/>
+            <p>@Constant.CopyRight</p>
+        </div>
+    </div>
+</footer>
+<script src="~/lib/jquery/jquery.slim.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+@await RenderSectionAsync("scripts", required: false)
+</body>
+</html>

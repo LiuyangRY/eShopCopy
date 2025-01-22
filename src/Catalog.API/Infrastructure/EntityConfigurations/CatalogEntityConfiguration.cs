@@ -3,13 +3,13 @@
 /// <summary>
 /// 目录实体配置
 /// </summary>
-public class CatalogEntityConfiguration : IEntityTypeConfiguration<Model.Catalog>
+public class CatalogEntityConfiguration : IEntityTypeConfiguration<Models.Catalog>
 {
     /// <summary>
     /// 配置
     /// </summary>
     /// <param name="builder">实体类型构建类</param>
-    public void Configure(EntityTypeBuilder<Model.Catalog> builder)
+    public void Configure(EntityTypeBuilder<Models.Catalog> builder)
     {
         builder.ToTable("Catalog");
         builder.Property(catalog => catalog.Name)

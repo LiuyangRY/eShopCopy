@@ -1,4 +1,3 @@
-using eShop.ServiceDefaults.Constant;
 using eShop.WebApp.Components;
 using eShop.WebApp.Extensions;
 

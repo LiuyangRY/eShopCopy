@@ -1,6 +1,5 @@
-﻿using eShop.Catalog.API.Infrastructure;
+﻿using eShop.IntegrationEventLogEF.Protocols;
 using eShop.IntegrationEventLogEF.Services;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace eShop.Catalog.API.Extensions;
 
@@ -20,7 +19,7 @@ internal static class Extensions
             builder.Services.AddDbContext<CatalogContext>();
             return;
         }
-        builder.AddNpgsqlDbContext<CatalogContext>("catalogdb", configureDbContextOptions: dbContextOptionsBuilder =>
+        builder.AddNpgsqlDbContext<CatalogContext>("catalogDb", configureDbContextOptions: dbContextOptionsBuilder =>
         {
             dbContextOptionsBuilder.UseNpgsql(optionsBuilder =>
             {

@@ -1,5 +1,4 @@
-﻿using eShop.ServiceDefaults.Constant;
-using eShop.WebAppComponents.Protocol;
+﻿using eShop.WebAppComponents.Protocols;
 
 namespace eShop.WebApp.Services;
 

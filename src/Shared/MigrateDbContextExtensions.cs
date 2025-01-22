@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
 
-namespace eShop.Catalog.API.Extensions;
+namespace Microsoft.AspNetCore.Hosting;
 
 /// <summary>
 /// 迁移数据库上下文扩展
 /// </summary>
-public static class MigrateDbContextExtensions
+internal static class MigrateDbContextExtensions
 {
     private static readonly string ActivitySourceName = "DbMigrations";
     private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
@@ -71,7 +71,7 @@ public static class MigrateDbContextExtensions
         {
             logger.LogInformation($"迁移数据库，上下文：{typeof(TContext).Name}");
             var strategy = context.Database.CreateExecutionStrategy();
-            var parameter = new SeederParameter<TContext>(seeder, context, serviceProvider);
+            var parameter = new SeederParameter<TContext>(seeder, context, scopedService);
             await strategy.ExecuteAsync(parameter, InvokeSeeder);
         }
         catch (Exception exception)

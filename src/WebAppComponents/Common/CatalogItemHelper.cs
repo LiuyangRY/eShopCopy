@@ -1,4 +1,4 @@
-﻿using eShop.WebAppComponents.Model;
+﻿using eShop.WebAppComponents.Models;
 
 namespace eShop.WebAppComponents.Common;
 

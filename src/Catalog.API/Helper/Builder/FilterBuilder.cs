@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using eShop.Catalog.API.Model;
+using eShop.Catalog.API.Models;
 
 namespace eShop.Catalog.API.Helper.Builder;
 

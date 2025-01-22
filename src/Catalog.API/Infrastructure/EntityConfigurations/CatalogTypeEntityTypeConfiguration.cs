@@ -1,4 +1,4 @@
-﻿using eShop.Catalog.API.Model;
+﻿using eShop.Catalog.API.Models;
 
 namespace eShop.Catalog.API.Infrastructure.EntityConfigurations;
 

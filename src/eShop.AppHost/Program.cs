@@ -1,3 +1,4 @@
+using Common.Constant;
 using eShop.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -8,9 +9,14 @@ var postgres = builder.AddPostgres("postgres")
     .WithImageTag("latest")
     .WithLifetime(ContainerLifetime.Persistent);
 
-var catalogDb = postgres.AddDatabase("catalogdb");
+var identityDb = postgres.AddDatabase("identityDb");
+var catalogDb = postgres.AddDatabase("catalogDb");
 
 var launchProfileName = GetHttpProtocolNameForEndpoint();
+
+var identityApi = builder.AddProject<Projects.Identity_API>("identity-api", launchProfileName)
+    .WithExternalHttpEndpoints()
+    .WithReference(identityDb);
 
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
     .WithReference(catalogDb);
@@ -20,7 +26,10 @@ var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithReference(catalogApi);
 
 // 连接回调url
-webApp.WithEnvironment("CallBackUrl", webApp.GetEndpoint(launchProfileName));
+var webAppCallBackUrl = webApp.GetEndpoint(launchProfileName);
+webApp.WithEnvironment(ServiceConstant.WebAppCallBackUrl, webAppCallBackUrl);
+
+identityApi.WithEnvironment(ServiceConstant.WebAppName, webAppCallBackUrl);
 
 builder.Build().Run();
 

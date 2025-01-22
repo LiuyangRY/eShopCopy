@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
-using eShop.Catalog.API.Extensions;
-using eShop.Catalog.API.Model;
+using eShop.Catalog.API.Models;
 using Npgsql;
 
 namespace eShop.Catalog.API.Infrastructure;
@@ -36,7 +35,7 @@ public class CatalogContextSeed(IWebHostEnvironment webHostEnvironment, ILogger<
             var catalogIdSet = new HashSet<int>(sourceItems.Length);
             var catalogBrands = new List<CatalogBrand>(sourceItems.Length);
             var catalogTypes = new List<CatalogType>(sourceItems.Length);
-            var catalogs = new List<Model.Catalog>(sourceItems.Length);
+            var catalogs = new List<Models.Catalog>(sourceItems.Length);
             var now = DateTime.Now.ToUniversalTime();
             foreach (var item in sourceItems)
             {
@@ -72,7 +71,7 @@ public class CatalogContextSeed(IWebHostEnvironment webHostEnvironment, ILogger<
 
                 if (catalogBrand != null && catalogType != null && catalogIdSet.Add(item.Id))
                 {
-                    catalogs.Add(new Model.Catalog
+                    catalogs.Add(new Models.Catalog
                     {
                         Id = item.Id,
                         Name = item.Name ?? string.Empty,

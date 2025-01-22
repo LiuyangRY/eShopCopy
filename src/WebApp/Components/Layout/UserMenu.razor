@@ -31,5 +31,9 @@
     [CascadingParameter]
     public HttpContext? HttpContext { get; set; }
 
+    /// <summary>
+    /// 注销登录
+    /// </summary>
+    /// <returns>注销登录任务</returns>
     private Task LogOutAsync() => LogOutService.LogOutAsync(HttpContext!);
 }

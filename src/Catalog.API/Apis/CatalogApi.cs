@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using eShop.Catalog.API.Helper.Builder;
-using eShop.Catalog.API.Model;
+using eShop.Catalog.API.Models;
 
 namespace eShop.Catalog.API.Apis;
 
@@ -61,7 +61,7 @@ public static class CatalogApi
     /// <param name="context">目录数据库上下文</param>
     /// <param name="id">目录id</param>
     /// <returns>目录数据</returns>
-    private static async Task<Results<Ok<Model.Catalog>, NotFound, BadRequest<ProblemDetails>>> GetCatalogByIdAsync(CatalogContext context,
+    private static async Task<Results<Ok<Models.Catalog>, NotFound, BadRequest<ProblemDetails>>> GetCatalogByIdAsync(CatalogContext context,
         [Description("目录id")] int id)
     {
         if (id <= 0)
@@ -85,7 +85,7 @@ public static class CatalogApi
     /// <param name="context">目录数据库上下文</param>
     /// <param name="paginationRequest">分页请求参数</param>
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogAsync(CatalogContext context,
+    private static async Task<Ok<PaginatedData<Models.Catalog>>> GetPaginatedCatalogAsync(CatalogContext context,
         [AsParameters] PaginationRequest paginationRequest)
     {
         return await GetCatalogByConditionAsync(context, paginationRequest);
@@ -98,7 +98,7 @@ public static class CatalogApi
     /// <param name="paginationRequest">分页请求参数</param>
     /// <param name="typeId">类型id</param>
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByTypeIdAsync(CatalogContext context,
+    private static async Task<Ok<PaginatedData<Models.Catalog>>> GetPaginatedCatalogByTypeIdAsync(CatalogContext context,
         [AsParameters] PaginationRequest paginationRequest, int typeId)
     {
         return await GetCatalogByConditionAsync(context, paginationRequest, typeId: typeId);
@@ -111,7 +111,7 @@ public static class CatalogApi
     /// <param name="paginationRequest">分页请求参数</param>
     /// <param name="brandId">品牌id</param>
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByBrandIdAsync(
+    private static async Task<Ok<PaginatedData<Models.Catalog>>> GetPaginatedCatalogByBrandIdAsync(
         CatalogContext context,
         [AsParameters] PaginationRequest paginationRequest, int brandId)
     {
@@ -126,7 +126,7 @@ public static class CatalogApi
     /// <param name="typeId">类型id</param>
     /// <param name="brandId">品牌id</param>
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetPaginatedCatalogByTypeIdAndBrandIdAsync(
+    private static async Task<Ok<PaginatedData<Models.Catalog>>> GetPaginatedCatalogByTypeIdAndBrandIdAsync(
         CatalogContext context,
         [AsParameters] PaginationRequest paginationRequest, int typeId, int brandId)
     {
@@ -165,7 +165,7 @@ public static class CatalogApi
     /// <param name="typeId">类型id</param>
     /// <param name="brandId">品牌id</param> 
     /// <returns>分页目录数据</returns>
-    private static async Task<Ok<PaginatedData<Model.Catalog>>> GetCatalogByConditionAsync(CatalogContext context,
+    private static async Task<Ok<PaginatedData<Models.Catalog>>> GetCatalogByConditionAsync(CatalogContext context,
         PaginationRequest paginationRequest, int? typeId = null, int? brandId = null)
     {
         var conditionExpression = new CatalogFilterBuilder()
@@ -180,7 +180,7 @@ public static class CatalogApi
             .Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
             .Take(paginationRequest.PageSize)
             .ToListAsync();
-        return TypedResults.Ok(new PaginatedData<Model.Catalog>(paginationRequest.PageIndex, paginationRequest.PageSize,
+        return TypedResults.Ok(new PaginatedData<Models.Catalog>(paginationRequest.PageIndex, paginationRequest.PageSize,
             totalCount, catalogs));
     }
 

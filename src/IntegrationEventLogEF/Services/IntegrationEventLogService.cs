@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using eShop.IntegrationEventLogEF.Protocols;
 
 namespace eShop.IntegrationEventLogEF.Services;
 

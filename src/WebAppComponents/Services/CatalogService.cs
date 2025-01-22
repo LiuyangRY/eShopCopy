@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
-using eShop.WebAppComponents.Model;
-using eShop.WebAppComponents.Protocol;
+using eShop.WebAppComponents.Models;
+using eShop.WebAppComponents.Protocols;
 
 namespace eShop.WebAppComponents.Services;
 

@@ -3,7 +3,7 @@
 /// <summary>
 /// 目录筛选器构建类
 /// </summary>
-public class CatalogFilterBuilder : FilterBuilder<Model.Catalog>
+public class CatalogFilterBuilder : FilterBuilder<Models.Catalog>
 {
     /// <summary>
     /// 添加目录类型id筛选条件

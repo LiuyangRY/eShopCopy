@@ -1,0 +1,11 @@
+var builder = WebApplication.CreateBuilder(args);
+builder.AddServiceDefaults();
+builder.AddApplicationServices();
+var app = builder.Build();
+app.MapDefaultEndpoints();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseIdentityServer();
+app.UseAuthentication();
+app.MapDefaultControllerRoute();
+app.Run();

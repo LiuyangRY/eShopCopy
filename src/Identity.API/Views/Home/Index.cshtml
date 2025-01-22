@@ -1,0 +1,35 @@
+﻿@using System.Diagnostics
+@using Duende.IdentityServer.Hosting
+
+@{
+    var version = FileVersionInfo.GetVersionInfo(typeof(IdentityServerMiddleware).Assembly.Location).ProductVersion?.Split('+').First();
+}
+
+<div class="welcome-page">
+    <h1>
+        <img alt="图标" src="~/icon.jpg"/>
+        欢迎使用 IdentityServer4
+        <small class="text-muted">(version @version)</small>
+    </h1>
+    <ul>
+        <li>
+            IdentityServer 发布了一份
+            <a href="~/.well-know/openid-configuration">文档</a>
+            ，在这里你可以找到所有的元数据和链接的终结点、关键资源等。
+        </li>
+        <li>
+            <a href="~/diagnostics">点击这里</a>
+            去查看当前会话的标识
+        </li>
+        <li>
+            <a href="~/grants">点击这里</a>
+            去管理你保存的授权
+        </li>
+        <li>
+            以下是参考链接：
+            <a href="https://github.com/identityserver/identityServer4">源代码仓库</a>
+            ，和
+            <a href="https://github.com/identityserver/identityserver4/tree/main/samples">使用示例</a>
+        </li>
+    </ul>
+</div>
