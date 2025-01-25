@@ -3,7 +3,7 @@
 /// <summary>
 /// 常量类
 /// </summary>
-public class Constant
+public class Constants
 {
     /// <summary>
     /// 版权

@@ -1,4 +1,5 @@
-﻿using Duende.IdentityServer;
+﻿using Common.Constant;
+using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 
 namespace Identity.API.Configuration;
@@ -63,18 +64,18 @@ public class Config
     public static IEnumerable<Client> GetClientResources(IConfiguration configuration)
     {
         var secret = "secret".Sha256();
-        var webAppClientUri = configuration["WebAppClient"];
+        var webAppUri = configuration[ServiceConstants.WebAppUri];
         return
         [
             new Client
             {
-                ClientId = "webApp",
-                ClientName = "Web App Client",
+                ClientId = ServiceConstants.WebAppId,
+                ClientName = ServiceConstants.WebAppClientName,
                 ClientSecrets =
                 [
                     new Secret(secret)
                 ],
-                ClientUri = $"{webAppClientUri}",
+                ClientUri = webAppUri,
                 AllowedGrantTypes = GrantTypes.Code,
                 AllowAccessTokensViaBrowser = false,
                 RequireConsent = false,
@@ -82,16 +83,15 @@ public class Config
                 AlwaysIncludeUserClaimsInIdToken = true,
                 RequirePkce = false,
                 RedirectUris = [
-                    $"{webAppClientUri}/signin-oidc"
+                    $"{webAppUri}/signin-oidc"
                 ],
                 PostLogoutRedirectUris = [
-                    $"{webAppClientUri}/signout-callback-oidc"
+                    $"{webAppUri}/signout-callback-oidc"
                 ],
                 AllowedScopes = [
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
-                    "order"
                 ],
                 AccessTokenLifetime = TokenLifeTimeInSeconds,
                 IdentityTokenLifetime = TokenLifeTimeInSeconds,

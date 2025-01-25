@@ -73,12 +73,12 @@ public static class Extensions
     /// </summary>
     /// <param name="controller">控制器</param>
     /// <param name="viewName">视图名称</param>
-    /// <param name="redirectUri">重定向uri</param>
+    /// <param name="viewModel">视图模型</param>
     /// <returns>请求结果</returns>
-    public static IActionResult LoadingPage(this Microsoft.AspNetCore.Mvc.Controller controller, string viewName, string redirectUri)
+    public static IActionResult LoadingPage<T>(this Microsoft.AspNetCore.Mvc.Controller controller, string viewName, T viewModel) where T : class
     {
         controller.HttpContext.Response.StatusCode = 200;
         controller.HttpContext.Response.Headers["Location"] = string.Empty;
-        return controller.View(viewName, new RedirectViewModel { RedirectUrl = redirectUri });
+        return controller.View(viewName, viewModel);
     }
 }

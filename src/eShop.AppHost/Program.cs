@@ -25,11 +25,15 @@ var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithExternalHttpEndpoints()
     .WithReference(catalogApi);
 
-// 连接回调url
-var webAppCallBackUrl = webApp.GetEndpoint(launchProfileName);
-webApp.WithEnvironment(ServiceConstant.WebAppCallBackUrl, webAppCallBackUrl);
+// 回调url
+var identityApiUri = identityApi.GetEndpoint(launchProfileName);
+var webAppUri = webApp.GetEndpoint(launchProfileName);
 
-identityApi.WithEnvironment(ServiceConstant.WebAppName, webAppCallBackUrl);
+// 设置环境变量
+webApp.WithEnvironment(ServiceConstants.WebAppUri, webAppUri)
+    .WithEnvironment(ServiceConstants.IdentityApiUri, identityApiUri);
+
+identityApi.WithEnvironment(ServiceConstants.WebAppUri, webAppUri);
 
 builder.Build().Run();
 

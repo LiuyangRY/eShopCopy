@@ -12,5 +12,5 @@ public class ProductImageUrlProvider : IProductImageUrlProvider
     /// </summary>
     /// <param name="productId">产品id</param>
     /// <returns>产品图片链接</returns>
-    public string GetProductImageUrl(int productId) => $"product-images/{productId}?api-version={ServiceConstant.CatalogApiVersion}";
+    public string GetProductImageUrl(int productId) => $"product-images/{productId}?api-version={ServiceConstants.CatalogApiVersion}";
 }

@@ -3,7 +3,6 @@ using eShop.WebApp.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
-builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.AddApplicationServices();
 
 var app = builder.Build();
@@ -22,5 +21,5 @@ app.UseAntiforgery();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-app.MapForwarder("/product-images/{id}", ServiceConstant.CatalogApiUrl, "/api/catalog/{id}/pic");
+app.MapForwarder("/product-images/{id}", ServiceConstants.CatalogApiUrl, "/api/catalog/{id}/pic");
 app.Run();

@@ -1,7 +1,7 @@
 ﻿<div class="eshop-header @(IsCatalog ? "Home" : "")">
     <div class="eshop-header-hero">
         @{
-            var headerImage = IsCatalog ? "image/header-home.webp" : "image/header.webp";
+            var headerImage = IsCatalog ? "images/header-home.webp" : "image/header.webp";
         }
         <iamge role="presentation" src="@headerImage"/>
     </div>
@@ -11,7 +11,7 @@
                 <img alt="AdventureWorks" src="images/logo-header.svg" class="logo logo-header"/>
             </a>
            
-            @* <UserMenu/> *@
+            <UserMenu/>
         </nav>
         <div class="eshop-header-intro">
             <h1>
@@ -40,5 +40,6 @@
     /// <summary>
     /// 是否分类页面
     /// </summary>
-    private bool IsCatalog => false;
+    private bool IsCatalog => PageComponentType == typeof(Pages.Catalog.Catalog);
+
 }

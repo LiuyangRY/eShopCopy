@@ -3,17 +3,27 @@
 /// <summary>
 /// 服务常量
 /// </summary>
-public class ServiceConstant
+public class ServiceConstants
 {
+    /// <summary>
+    /// 认证ApiUri
+    /// </summary>
+    public const string IdentityApiUri = "IdentityApiUri";
+    
     /// <summary>
     /// 页面应用名称
     /// </summary>
-    public const string WebAppName = "WebApp";
+    public const string WebAppId = "WebApp";
     
     /// <summary>
-    /// 页面应用回调链接
+    /// 页面应用客户端名称
     /// </summary>
-    public const string WebAppCallBackUrl = "WebAppCallBackUrl";
+    public const string WebAppClientName = "Web App Client";
+    
+    /// <summary>
+    /// 页面应用Uri
+    /// </summary>
+    public const string WebAppUri = "WebAppUri";
     
     /// <summary>
     /// 目录Api链接
