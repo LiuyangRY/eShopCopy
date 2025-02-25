@@ -79,7 +79,11 @@ public static class Extensions
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {
-                resource.AddService(serviceName: builder.Environment.ApplicationName);
+                resource.AddService(serviceName: builder.Environment.ApplicationName)
+                    .AddAttributes(new Dictionary<string, object>()
+                    {
+                        ["deployment.environment"] = builder.Environment.EnvironmentName,  // 添加环境标签
+                    });
             })
             .WithMetrics(metrics =>
             {
