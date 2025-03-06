@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -67,15 +68,16 @@ public static class Extensions
     /// <returns>宿主应用构建接口</returns>
     private static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
-        if (builder.Configuration["OpenTelemetry:enable"] != "True")
+        if (!builder.Configuration.GetValue<bool>("OpenTelemetry:enable"))
         {
             return builder;
-        } 
+        }
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
         });
+        var isProduction = builder.Environment.IsProduction();
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {
@@ -87,7 +89,13 @@ public static class Extensions
             })
             .WithMetrics(metrics =>
             {
-                metrics.AddAspNetCoreInstrumentation()
+                metrics.AddEventCountersInstrumentation(opt =>
+                    {
+                        opt.RefreshIntervalSecs = 15;
+                        opt.AddEventSources("Microsoft.EntityFrameworkCore");
+                    })
+                    .AddProcessInstrumentation()
+                    .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddSqlClientInstrumentation()
@@ -100,13 +108,56 @@ public static class Extensions
                     // 开发环境全采样追踪
                     tracing.SetSampler(new AlwaysOnSampler());
                 }
-
-                tracing.AddAspNetCoreInstrumentation()
-                    .AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation()
+                else if (isProduction)
+                {
+                    // 生产环境10%采样追踪
+                    tracing.SetSampler(new ParentBasedSampler(new TraceIdRatioBasedSampler(0.1)));
+                }
+                var groupName = "service.group";
+                tracing.AddEntityFrameworkCoreInstrumentation(opt =>
+                    {
+                        opt.SetDbStatementForText = true;
+                        opt.EnrichWithIDbCommand = (activity, command) =>
+                            activity.SetTag(groupName, "database"); // 添加数据库操作分组
+                    })
+                    .AddRedisInstrumentation(opt =>
+                    {
+                        opt.Enrich = (activity, exception) =>
+                            activity.SetTag(groupName, "cache"); // 添加缓存操作分组
+                        if (!isProduction)
+                        {
+                            opt.SetVerboseDatabaseStatements = true;
+                        }
+                    })
+                    .AddAspNetCoreInstrumentation(opt =>
+                    {
+                        opt.RecordException = true;
+                        opt.EnrichWithHttpRequest = (activity, request) =>
+                            activity.SetTag(groupName, "http-request"); // 添加HTTP请求分组
+                        opt.EnrichWithHttpResponse = (activity, response) =>
+                            activity.SetTag(groupName, "http-response"); // 添加HTTP响应分组
+                        opt.EnrichWithException = (activity, exception) =>
+                            activity.SetTag(groupName, "http-error"); // 添加HTTP错误分组
+                    })
+                    .AddGrpcClientInstrumentation(opt =>
+                    {
+                        opt.EnrichWithHttpRequestMessage = (activity, request) =>
+                            activity.SetTag(groupName, "rpc-request"); // 添加RPC调用分组
+                        opt.EnrichWithHttpResponseMessage = (activity, response) =>
+                            activity.SetTag(groupName, "rpc-response"); // 添加RPC调用分组
+                    })
+                    .AddHttpClientInstrumentation(opt =>
+                    {
+                        opt.EnrichWithHttpRequestMessage = (activity, request) =>
+                            activity.SetTag(groupName, "external-api-request"); // 添加外部API调用分组
+                        opt.EnrichWithHttpResponseMessage = (activity, response) =>
+                            activity.SetTag(groupName, "external-api-response"); // 添加外部API调用分组
+                        opt.EnrichWithException = (activity, exception) =>
+                            activity.SetTag(groupName, "external-api-error"); // 添加外部API调用分组
+                    })
                     .AddSource("Experimental.Microsoft.Extensions.AI");
             });
-        builder.AddOpenTelemetryExporters();
+        builder.AddOpenTelemetryExporters(isProduction);
         return builder;
     }
 
@@ -114,12 +165,16 @@ public static class Extensions
     /// 添加OpenTelemetry导出服务
     /// </summary>
     /// <param name="builder">宿主应用构建接口</param>
+    /// <param name="isProduction">是否是生产环境</param>
     /// <returns>宿主应用构建接口</returns>
-    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder, bool isProduction)
     {
         builder.Services.Configure<OpenTelemetryLoggerOptions>(logging => logging.AddOtlpExporter());
         builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter().AddPrometheusExporter());
-        builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
+        builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter(opt =>
+        {
+            opt.ExportProcessorType = isProduction ? OpenTelemetry.ExportProcessorType.Batch : OpenTelemetry.ExportProcessorType.Simple;
+        }));
         return builder;
     }
 
@@ -134,13 +189,13 @@ public static class Extensions
         {
             return app;
         }
-        
+
         app.MapHealthChecks("/health");
         app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = (check) => check.Tags.Contains("live") });
-        if (app.Configuration["OpenTelemetry:enable"] == "True")
+        if (app.Configuration.GetValue<bool>("OpenTelemetry:enable"))
         {
             app.MapPrometheusScrapingEndpoint();
-        } 
+        }
         return app;
     }
 }

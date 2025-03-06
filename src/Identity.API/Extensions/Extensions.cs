@@ -3,7 +3,6 @@ using Duende.IdentityServer.Services;
 using Identity.API.Configuration;
 using Identity.API.Infrastructure;
 using Identity.API.Models;
-using Identity.API.Models.Account;
 using Identity.API.Protocols;
 using Identity.API.Services;
 using Microsoft.AspNetCore.Mvc;
