@@ -31,6 +31,8 @@ public static class Extensions
         webBuilder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<IdentityContext>()
             .AddDefaultTokenProviders();
+        var isDevelopment = webBuilder.Environment.IsDevelopment();
+        var credentialFileName = isDevelopment ? null : "identity.jwk";
         webBuilder.Services.AddIdentityServer(options =>
             {
                 options.Authentication.CookieLifetime = TimeSpan.FromHours(Config.TokenLifeTimeInHours);
@@ -38,7 +40,7 @@ public static class Extensions
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-                if (webBuilder.Environment.IsDevelopment())
+                if (isDevelopment)
                 {
                     options.KeyManagement.Enabled = false;
                 }
@@ -48,8 +50,7 @@ public static class Extensions
             .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClientResources(webBuilder.Configuration))
             .AddAspNetIdentity<ApplicationUser>()
-            // 在生产环境中在其他位置保存key
-            .AddDeveloperSigningCredential();
+            .AddDeveloperSigningCredential(filename: credentialFileName);
         webBuilder.Services.AddTransient<IProfileService, ProfileService>();
         webBuilder.Services.AddTransient<ILoginService<ApplicationUser>, EFLoginService>();
         webBuilder.Services.AddTransient<IRedirectService, RedirectService>();
