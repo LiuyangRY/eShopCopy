@@ -169,11 +169,18 @@ public static class Extensions
     /// <returns>宿主应用构建接口</returns>
     private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder, bool isProduction)
     {
-        builder.Services.Configure<OpenTelemetryLoggerOptions>(logging => logging.AddOtlpExporter());
-        builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter().AddPrometheusExporter());
+        var exportProcessorType = isProduction? OpenTelemetry.ExportProcessorType.Batch : OpenTelemetry.ExportProcessorType.Simple;
+        builder.Services.Configure<OpenTelemetryLoggerOptions>(logging => logging.AddOtlpExporter(opt =>
+        {
+            opt.ExportProcessorType = exportProcessorType;
+        }));
+        builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter(opt =>
+        {
+            opt.ExportProcessorType = exportProcessorType;
+        }).AddPrometheusExporter());
         builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter(opt =>
         {
-            opt.ExportProcessorType = isProduction ? OpenTelemetry.ExportProcessorType.Batch : OpenTelemetry.ExportProcessorType.Simple;
+            opt.ExportProcessorType = exportProcessorType;
         }));
         return builder;
     }
