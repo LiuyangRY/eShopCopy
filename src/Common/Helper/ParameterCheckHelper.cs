@@ -10,7 +10,7 @@ public static class ParameterCheckHelper
     /// </summary>
     /// <param name="parameter">参数</param>
     /// <param name="errorMsg">校验不通过错误消息</param>
-    public static void IsNotNullOrWhitespace(this string parameter, string errorMsg)
+    public static void IsNotNullOrWhitespace(this string? parameter, string errorMsg)
     {
         if (string.IsNullOrWhiteSpace(parameter))
         {

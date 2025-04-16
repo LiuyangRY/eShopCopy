@@ -1,9 +1,9 @@
 ﻿@model Identity.API.Models.Account.ErrorViewModel
 
 @{
-    var error = Model?.ErrorMessage?.Error;
-    var errorDescription = Model?.ErrorMessage?.ErrorDescription;
-    var requestId = Model?.ErrorMessage?.RequestId;
+    @* var error = Model?.ErrorMessage?.Error; *@
+    var errorDescription = Model?.ErrorMessage;
+    @* var requestId = Model?.ErrorMessage?.RequestId; *@
 }
 
 <div class="error-page">
@@ -13,8 +13,8 @@
     <div class="row">
         <div class="col-sm-6">
             <div class="alert alert-danger">
-                错误信息：
-                @if (error != null)
+                错误信息：<div>@errorDescription</div>
+                @* @if (error != null)
                 {
                     <strong>
                         <em>
@@ -30,7 +30,7 @@
             @if (@requestId != null)
             {
                 <div class="request-id">请求id：@requestId</div>
-            }
+            } *@
         </div>
         <li>
             <a href="~/diagnostics">点击这里</a>

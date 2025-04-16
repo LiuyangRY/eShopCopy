@@ -65,7 +65,10 @@ internal static class MigrateDbContextExtensions
         var scopedService = scope.ServiceProvider;
         var logger = scopedService.GetRequiredService<ILogger<TContext>>();
         var context = scopedService.GetRequiredService<TContext>();
-
+        if (context.Database.HasPendingModelChanges())
+        {
+            throw new Exception($"数据库上下文 {typeof(TContext).Name} 存在未提交的模型更改，可能会导致迁移失败。请先提交更改。");
+        }
         using var activity = ActivitySource.StartActivity($"迁移操作 {typeof(TContext).Name}");
         try
         {

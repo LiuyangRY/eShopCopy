@@ -6,7 +6,7 @@ namespace Identity.API.Services;
 /// <summary>
 /// 重定向服务
 /// </summary>
-public class RedirectService : IRedirectService
+public partial class RedirectService : IRedirectService
 {
     /// <summary>
     /// 从返回链接中提取重定向资源地址
@@ -16,7 +16,7 @@ public class RedirectService : IRedirectService
     public string ExtractRedirectUriFromReturnUrl(string returnUrl)
     {
         var decodeUrl = System.Net.WebUtility.HtmlDecode(returnUrl);
-        var results = Regex.Split(decodeUrl, "redirect_uri=");
+        var results = RedirectUriRegex().Split(decodeUrl);
         if (results.Length < 2)
             return string.Empty;
         var result = results[1];
@@ -32,4 +32,7 @@ public class RedirectService : IRedirectService
             .Replace("%2F", "/")
             .Replace("&", "");
     }
+
+    [GeneratedRegex("redirect_uri=")]
+    private static partial Regex RedirectUriRegex();
 }

@@ -30,11 +30,9 @@ var identityApiUri = identityApi.GetEndpoint(launchProfileName);
 var webAppUri = webApp.GetEndpoint(launchProfileName);
 
 // 设置环境变量
-webApp.WithEnvironment(ServiceConstants.WebAppUri, webAppUri)
+webApp.WithEnvironment(ServiceConstants.WebApp, webAppUri)
     .WithEnvironment(ServiceConstants.IdentityApiUri, identityApiUri);
-
-identityApi.WithEnvironment(ServiceConstants.WebAppUri, webAppUri);
-
+identityApi.WithEnvironment(ServiceConstants.WebApp, webAppUri);
 builder.Build().Run();
 
 // 获取终结点HTTP协议名称

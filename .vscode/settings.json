@@ -1,0 +1,26 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 50300,
+            "driver": "PostgreSQL",
+            "name": "Catalog Api",
+            "group": "开发",
+            "username": "postgres",
+            "password": "hWGm18s_mkvR29Hpe~04u8",
+            "database": "catalogDb"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 58843,
+            "driver": "PostgreSQL",
+            "name": "Identity Api",
+            "group": "开发",
+            "database": "identityDb",
+            "username": "postgres",
+            "password": "hWGm18s_mkvR29Hpe~04u8"
+        }
+    ]
+}

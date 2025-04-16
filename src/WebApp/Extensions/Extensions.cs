@@ -3,9 +3,9 @@ using eShop.WebAppComponents.Protocols;
 using eShop.WebAppComponents.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace eShop.WebApp.Extensions;
 
@@ -32,8 +32,8 @@ public static class Extensions
         builder.Services
             .AddHttpClient<CatalogService>(
                 httpClient => httpClient.BaseAddress = new Uri(ServiceConstants.CatalogApiUrl))
-            .AddApiVersion(ServiceConstants.CatalogApiVersion);
-        // .AddAuthToken();
+            .AddApiVersion(ServiceConstants.CatalogApiVersion)
+            .AddAuthToken();
     }
 
     /// <summary>
@@ -42,32 +42,36 @@ public static class Extensions
     /// <param name="builder">宿主服务构建类</param>
     private static void AddAuthenticationServices(this IHostApplicationBuilder builder)
     {
-        JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
         var identityUri = builder.Configuration.GetRequiredValue(ServiceConstants.IdentityApiUri);
-        var callBackUri = builder.Configuration.GetRequiredValue(ServiceConstants.WebAppUri);
-        var sessionCookieLifetimeMinutes = builder.Configuration.GetValue("SessionCookieLifetimeMinutes", 60);
-        builder.Services.AddAuthorization();
-        builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options => options.ExpireTimeSpan = TimeSpan.FromMinutes(sessionCookieLifetimeMinutes))
-            .AddOpenIdConnect(options =>
-            {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.Authority = identityUri;
-                options.SignedOutRedirectUri = callBackUri;
-                options.ClientId = ServiceConstants.WebAppId;
-                options.ClientSecret = "secret";
-                options.ResponseType = "code";
-                options.SaveTokens = true;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-                options.Scope.Add("openid");
-                options.Scope.Add("profile");
-            });
-        // Blazor身份认证服务
+        builder.Services.AddAuthorization(options =>
+        {
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAssertion(_ => true)
+                .Build();
+        })
+        .AddAuthentication(options =>
+        {
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+        })
+        .AddCookie(options =>
+        {
+            options.Cookie.Name = "eshop.webapp.auth";
+            options.LoginPath = "/account/login";
+        })
+        .AddOpenIdConnect(options => 
+        {
+            options.Authority = identityUri;
+            options.ClientId = ServiceConstants.WebApp;
+            options.ClientSecret = $"{ServiceConstants.WebApp}SecretKey";
+            options.ResponseType = "code";
+            options.Scope.Add("openid");
+            options.Scope.Add("profile");
+            options.CallbackPath = new PathString("/signin-oidc");
+            options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.SaveTokens = true;
+        });
         builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
         builder.Services.AddCascadingAuthenticationState();
     }

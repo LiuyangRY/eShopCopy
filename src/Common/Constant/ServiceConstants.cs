@@ -9,21 +9,16 @@ public class ServiceConstants
     /// 认证ApiUri
     /// </summary>
     public const string IdentityApiUri = "IdentityApiUri";
+
+    /// <summary>
+    /// 接口测试
+    /// </summary>
+    public const string ApiTest = "ApiTest";
     
     /// <summary>
-    /// 页面应用名称
+    /// 页面应用
     /// </summary>
-    public const string WebAppId = "WebApp";
-    
-    /// <summary>
-    /// 页面应用客户端名称
-    /// </summary>
-    public const string WebAppClientName = "Web App Client";
-    
-    /// <summary>
-    /// 页面应用Uri
-    /// </summary>
-    public const string WebAppUri = "WebAppUri";
+    public const string WebApp = "WebApp";
     
     /// <summary>
     /// 目录Api链接

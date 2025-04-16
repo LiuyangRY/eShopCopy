@@ -7,7 +7,6 @@ builder.AddApplicationServices();
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
 
 // 配置Http请求管道
 if (!app.Environment.IsDevelopment())
@@ -17,9 +16,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseAntiforgery();
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=31536000");
+    }
+});
+app.UseRouting();
+app.UseCookiePolicy();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapForwarder("/product-images/{id}", ServiceConstants.CatalogApiUrl, "/api/catalog/{id}/pic");
+app.MapDefaultEndpoints();
 app.Run();

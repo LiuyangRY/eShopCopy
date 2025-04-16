@@ -1,13 +1,19 @@
-﻿using Identity.API.Models;
+﻿using Common.Constant;
+using Identity.API.Models;
+using OpenIddict.Abstractions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Identity.API.Infrastructure;
 
 /// <summary>
 /// 认证数据库上下文种子
-/// <param name="logger">日志</param>
-/// <param name="userManager">用户管理</param>
 /// </summary>
-public class IdentityContextSeed(ILogger<IdentityContextSeed> logger, UserManager<ApplicationUser> userManager)
+public class IdentityContextSeed(ILogger<IdentityContextSeed> logger
+, UserManager<ApplicationUser> userManager
+, IOpenIddictApplicationManager openIddictApplicationManager
+, IOpenIddictScopeManager openIddictScopeManager
+, IWebHostEnvironment environment
+, IConfiguration configuration)
     : IDbSeeder<IdentityContext>
 {
     /// <summary>
@@ -16,30 +22,27 @@ public class IdentityContextSeed(ILogger<IdentityContextSeed> logger, UserManage
     /// <param name="context">认证数据库上下文</param>
     public async Task SeedAsync(IdentityContext context)
     {
-        var alice = await userManager.FindByNameAsync("alice");
-        if (alice is null)
+        await InitApplicationUserAsync();
+        await InitApplycationsAsync();
+        await InitScopesAsync();
+    }
+
+    /// <summary>
+    /// 初始化应用程序用户 
+    /// </summary>
+    /// <returns>初始化任务</returns>
+    private async Task InitApplicationUserAsync()
+    {
+        var clientIds = new List<string> { ServiceConstants.ApiTest, ServiceConstants.WebApp };
+        if (await userManager.FindByNameAsync("admin") is not ApplicationUser admin)
         {
-            alice = new ApplicationUser
+            admin = new ApplicationUser
             {
-                UserName = "alice",
-                Email = "AliceSmith@email.com",
-                EmailConfirmed = true,
-                CardHolderName = "Alice Smith",
-                CardNumber = "XXXXXXXXXXXX1881",
-                CardType = 1,
-                City = "Redmond",
-                Country = "U.S.",
-                Expiration = "12/24",
-                Id = Guid.NewGuid().ToString(),
-                LastName = "Smith",
-                Name = "Alice",
-                PhoneNumber = "1234567890",
-                ZipCode = "98052",
-                State = "WA",
-                Street = "15703 NE 61st Ct",
-                SecurityNumber = "123"
+                UserName = "admin",
+                Email = "admin@email.com",
+                ClientIds = clientIds
             };
-            var result = await userManager.CreateAsync(alice, "Pass123$");
+            var result = await userManager.CreateAsync(admin, "Pass123$");
             if (!result.Succeeded)
             {
                 throw new Exception(result.Errors.First().Description);
@@ -47,45 +50,122 @@ public class IdentityContextSeed(ILogger<IdentityContextSeed> logger, UserManage
 
             if (logger.IsEnabled(LogLevel.Debug))
             {
-                logger.LogDebug("用户【alice】创建成功");
+                logger.LogDebug("管理员创建成功");
             }
         }
+    }
 
-        var bob = await userManager.FindByNameAsync("bob");
-
-        if (bob == null)
+    /// <summary>
+    /// 初始化应用程序
+    /// </summary>
+    /// <returns>初始化任务</returns> 
+    private async Task InitApplycationsAsync()
+    {
+        if (await openIddictApplicationManager.FindByClientIdAsync(ServiceConstants.WebApp) is null)
         {
-            bob = new ApplicationUser
+            var callbackUri = configuration.GetRequiredValue(ServiceConstants.WebApp);
+            var application = new OpenIddictApplicationDescriptor
             {
-                UserName = "bob",
-                Email = "BobSmith@email.com",
-                EmailConfirmed = true,
-                CardHolderName = "Bob Smith",
-                CardNumber = "XXXXXXXXXXXX1881",
-                CardType = 1,
-                City = "Redmond",
-                Country = "U.S.",
-                Expiration = "12/24",
-                Id = Guid.NewGuid().ToString(),
-                LastName = "Smith",
-                Name = "Bob",
-                PhoneNumber = "1234567890",
-                ZipCode = "98052",
-                State = "WA",
-                Street = "15703 NE 61st Ct",
-                SecurityNumber = "456"
+                ClientId = ServiceConstants.WebApp,
+                DisplayName = ServiceConstants.WebApp,
+                ApplicationType = ApplicationTypes.Web,
+                ClientType = ClientTypes.Confidential,
+                ClientSecret = $"{ServiceConstants.WebApp}SecretKey",
+                RedirectUris = { 
+                    new Uri($"{callbackUri}/signin-oidc")
+                },
+                Permissions =
+                {
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Token,
+                    Permissions.Endpoints.Introspection,
+                    Permissions.Endpoints.Revocation,
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.RefreshToken,
+                    Permissions.ResponseTypes.Code,
+                    Permissions.Scopes.Email,
+                    Permissions.Scopes.Profile,
+                    Permissions.Scopes.Roles,
+                    Permissions.Prefixes.Scope + ServiceConstants.WebApp,
+                },
+                Requirements =
+                {
+                    Requirements.Features.ProofKeyForCodeExchange
+                }
             };
-
-            var result = await userManager.CreateAsync(bob, "Pass123$");
-
-            if (!result.Succeeded)
+            await openIddictApplicationManager.CreateAsync(application);
+        }
+        if (environment.IsDevelopment())
+        {
+            if (await openIddictApplicationManager.FindByClientIdAsync(ServiceConstants.ApiTest) is null)
             {
-                throw new Exception(result.Errors.First().Description);
+                var application = new OpenIddictApplicationDescriptor
+                {
+                    ClientId = ServiceConstants.ApiTest,
+                    DisplayName = ServiceConstants.ApiTest,
+                    ApplicationType = ApplicationTypes.Native,
+                    ClientType = ClientTypes.Public,
+                    RedirectUris =
+                    {
+                        new Uri($"http://localhost:5000/callback/{ServiceConstants.ApiTest}")
+                    },
+                    Permissions =
+                    {
+                        Permissions.Endpoints.Authorization,
+                        Permissions.Endpoints.Token,
+                        Permissions.Endpoints.Introspection,
+                        Permissions.Endpoints.Revocation,
+                        Permissions.GrantTypes.AuthorizationCode,
+                        Permissions.GrantTypes.ClientCredentials,
+                        Permissions.GrantTypes.RefreshToken,
+                        Permissions.GrantTypes.Password,
+                        Permissions.ResponseTypes.Code,
+                        Permissions.Scopes.Email,
+                        Permissions.Scopes.Profile,
+                        Permissions.Scopes.Roles,
+                        Permissions.Prefixes.Scope + ServiceConstants.ApiTest,
+                    },
+                    Requirements =
+                    {
+                        Requirements.Features.ProofKeyForCodeExchange
+                    }
+                };
+                await openIddictApplicationManager.CreateAsync(application);
             }
+        }
+    }
 
-            if (logger.IsEnabled(LogLevel.Debug))
+    /// <summary>
+    /// 初始化作用域
+    /// </summary>
+    /// <returns>初始化任务</returns> 
+    private async Task InitScopesAsync()
+    {
+        if (await openIddictScopeManager.FindByNameAsync(ServiceConstants.WebApp) is null)
+        {
+            var scope = new OpenIddictScopeDescriptor
             {
-                logger.LogDebug("用户【bob】创建成功");
+                Name = ServiceConstants.WebApp,
+                Resources =
+                    {
+                        ServiceConstants.WebApp
+                    }
+            };
+            await openIddictScopeManager.CreateAsync(scope);
+        }
+        if (environment.IsDevelopment())
+        {
+            if (await openIddictScopeManager.FindByNameAsync(ServiceConstants.ApiTest) is null)
+            {
+                var scope = new OpenIddictScopeDescriptor
+                {
+                    Name = ServiceConstants.ApiTest,
+                    Resources =
+                    {
+                        ServiceConstants.ApiTest
+                    }
+                };
+                await openIddictScopeManager.CreateAsync(scope);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +31,7 @@ public static class HttpClientExtensions
     private class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        
+
         /// <summary>
         /// Http授权委托处理类构造函数
         /// </summary>
@@ -47,15 +48,28 @@ public static class HttpClientExtensions
             _httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// 发送Http异步请求
+        /// </summary>
+        /// <param name="request">请求消息</param>
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <returns>Http响应</returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
             if (_httpContextAccessor.HttpContext is HttpContext httpContext)
             {
-                var accessToken = await httpContext.GetTokenAsync("access_token");
-                if (accessToken is not null)
+                if (httpContext.Response.StatusCode is (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.Forbidden)
                 {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (httpContext.User.Identity?.IsAuthenticated == true)
+                {
+                    var accessToken = await httpContext.GetTokenAsync("access_token");
+                    if (accessToken is not null)
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
                 }
             }
             return await base.SendAsync(request, cancellationToken);

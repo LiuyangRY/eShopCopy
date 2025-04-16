@@ -9,7 +9,6 @@ builder.Services.AddProblemDetails();
 var withApiVersioning = builder.Services.AddApiVersioning();
 builder.AddDefaultOpenApi(withApiVersioning);
 var app = builder.Build();
-app.MapDefaultEndpoints();
 app.UseStatusCodePages();
 
 app.NewVersionedApi("Catalog")
@@ -19,4 +18,5 @@ app.NewVersionedApi("Brand")
 app.NewVersionedApi("Type")
     .MapTypeApiV1();
 app.UseDefaultOpenApi();
+app.MapDefaultEndpoints();
 app.Run();

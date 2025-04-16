@@ -1,18 +1,16 @@
-﻿using Duende.IdentityServer.Services;
-using Identity.API.Models.Account;
+﻿using Identity.API.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Identity.API.Controller;
+namespace Identity.API.Controllers;
 
 /// <summary>
 /// 主页控制器
 /// </summary>
 [SecurityHeaders]
 [AllowAnonymous]
-public class HomeController : Microsoft.AspNetCore.Mvc.Controller
+public class HomeController : Controller
 {
-    private readonly IIdentityServerInteractionService _interaction;
     private readonly IWebHostEnvironment _hostingEnvironment;
     private readonly ILogger _logger;
 
@@ -20,12 +18,10 @@ public class HomeController : Microsoft.AspNetCore.Mvc.Controller
     /// 主页控制器构造函数
     /// </summary>
     /// <param name="logger">日志</param>
-    /// <param name="interaction">认证服务器交互服务</param>
     /// <param name="hostingEnvironment">宿主环境</param>
-    public HomeController(ILogger<HomeController> logger, IIdentityServerInteractionService interaction, IWebHostEnvironment hostingEnvironment)
+    public HomeController(ILogger<HomeController> logger, IWebHostEnvironment hostingEnvironment)
     {
         _logger = logger;
-        _interaction = interaction;
         _hostingEnvironment = hostingEnvironment;
     }
 
@@ -50,15 +46,16 @@ public class HomeController : Microsoft.AspNetCore.Mvc.Controller
     public async Task<IActionResult> Error(string errorId)
     {
         ErrorViewModel? viewModel = null;
-        var message = await _interaction.GetErrorContextAsync(errorId);
-        if (message != null)
-        {
-            viewModel = new ErrorViewModel(message);
-            if (!_hostingEnvironment.IsDevelopment())
-            {
-                message.ErrorDescription = null;
-            }
-        }
+        // var message = await _interaction.GetErrorContextAsync(errorId);
+        // if (message != null)
+        // {
+        //     viewModel = new ErrorViewModel(message);
+        //     if (!_hostingEnvironment.IsDevelopment())
+        //     {
+        //         message.ErrorDescription = null;
+        //     }
+        // }
+        await Task.CompletedTask;
         return View("Error", viewModel);
     }
 }

@@ -9,9 +9,10 @@ namespace Identity.API.Infrastructure;
 public class IdentityContext : IdentityDbContext<ApplicationUser>
 {
     /// <summary>
-    /// 认证数据库上下文
+    /// 认证数据库上下文构造函数
     /// </summary>
-    /// <param name="options">数据库上下文选项</param>
+    /// <param name="options">数据库上下文配置</param>
+    /// <returns>认证数据库上下文</returns>
     public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
     {
     }
