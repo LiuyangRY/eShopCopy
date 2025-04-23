@@ -7,7 +7,6 @@ namespace Identity.API.Controllers;
 /// <summary>
 /// 主页控制器
 /// </summary>
-[SecurityHeaders]
 [AllowAnonymous]
 public class HomeController : Controller
 {

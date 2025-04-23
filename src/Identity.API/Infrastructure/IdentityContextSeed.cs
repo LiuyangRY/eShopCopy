@@ -107,7 +107,7 @@ public class IdentityContextSeed(ILogger<IdentityContextSeed> logger
                     ClientType = ClientTypes.Public,
                     RedirectUris =
                     {
-                        new Uri($"http://localhost:5000/callback/{ServiceConstants.ApiTest}")
+                        new Uri($"https://localhost:5000/signin-oidc")
                     },
                     Permissions =
                     {
