@@ -1,5 +1,4 @@
-﻿@inject LogOutService LogOutService
-@inject NavigationManager Nav
+﻿@inject NavigationManager Nav
 
 <AuthorizeView>
     <Authorized>
@@ -35,5 +34,5 @@
     /// 注销登录
     /// </summary>
     /// <returns>注销登录任务</returns>
-    private Task LogOutAsync() => LogOutService.LogOutAsync(HttpContext!);
+    private Task LogOutAsync() => Task.CompletedTask;
 }

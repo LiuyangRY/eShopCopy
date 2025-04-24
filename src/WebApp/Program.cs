@@ -26,8 +26,6 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseRouting();
 app.UseCookiePolicy();
-app.UseAuthentication();
-app.UseAuthorization();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapForwarder("/product-images/{id}", ServiceConstants.CatalogApiUrl, "/api/catalog/{id}/pic");
