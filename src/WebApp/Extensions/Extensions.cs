@@ -10,6 +10,16 @@ namespace eShop.WebApp.Extensions;
 public static class Extensions
 {
     /// <summary>
+    /// 配置路由转发
+    /// </summary>
+    /// <param name="webApplication">站点应用</param>
+    /// <returns>站点应用</returns>
+    public static void ConfigRouteForward(this WebApplication webApplication)
+    {
+        webApplication.MapForwarder("/product-images/{id}", ServiceConstants.CatalogApiUrl, "/api/catalog/{id}/pic");
+    }
+
+    /// <summary>
     /// 添加应用服务
     /// </summary>
     /// <param name="builder">宿主服务构建类</param>

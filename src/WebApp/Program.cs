@@ -28,6 +28,6 @@ app.UseRouting();
 app.UseCookiePolicy();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-app.MapForwarder("/product-images/{id}", ServiceConstants.CatalogApiUrl, "/api/catalog/{id}/pic");
+app.ConfigRouteForward();
 app.MapDefaultEndpoints();
 app.Run();
