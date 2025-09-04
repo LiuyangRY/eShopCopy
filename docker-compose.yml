@@ -8,6 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+      TZ: Asia/Shanghai
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -26,8 +27,17 @@ services:
     depends_on:
       - prometheus
       - postgres
+    environment:
+      TZ: Asia/Shanghai
     networks:
       - monitoring
+    volumes:
+      - grafana_data:/var/lib/grafana
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   prometheus:
     image: prom/prometheus:latest
@@ -46,6 +56,7 @@ services:
 
 volumes:
   postgres_data:
+  grafana_data:
 
 networks:
   monitoring:
