@@ -3,16 +3,16 @@ services:
     image: ankane/pgvector:latest
     container_name: postgres
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
       TZ: Asia/Shanghai
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,7 +23,7 @@ services:
     image: grafana/grafana-oss:latest
     container_name: grafana
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT}:3000"
     depends_on:
       - prometheus
       - postgres
@@ -34,7 +34,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      test: ["CMD", "wget", "--spider", "-q", "${GRAFANA_URL}:${GRAFANA_PORT}/api/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -43,13 +43,13 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./deploy/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./deploy/prometheus.${ENV}.yaml:/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090"
+      - "${PROMETHEUS_PORT}:9090"
     networks:
       - monitoring
     healthcheck:
-      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy" ]
+      test: [ "CMD", "wget", "--spider", "-q", "${PROMETHEUS_URL}:${PROMETHEUS_PORT}/-/healthy" ]
       interval: 10s
       timeout: 5s
       retries: 3

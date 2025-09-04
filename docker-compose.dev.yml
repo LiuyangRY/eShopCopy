@@ -1,0 +1,9 @@
+services:
+  prometheus:
+    command: --config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle  # 启用热重载
+
+volumes:
+  postgres_data:
+    name: postgres_data_dev
+  grafana_data:
+    name: grafana_data_dev
