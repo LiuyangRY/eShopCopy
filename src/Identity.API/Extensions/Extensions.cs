@@ -15,7 +15,7 @@ public static class Extensions
     public static WebApplicationBuilder AddApplicationServices(this WebApplicationBuilder webBuilder)
     {
         webBuilder.Services.AddControllersWithViews();
-        webBuilder.AddNpgsqlDbContext<IdentityContext>("identityDb");
+        // webBuilder.AddNpgsqlDbContext<IdentityContext>("identityDb");
         return webBuilder;
     }
 }

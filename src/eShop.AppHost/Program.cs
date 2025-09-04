@@ -1,25 +1,18 @@
 using Common.Constant;
 using eShop.AppHost;
+using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.AddForwardedHeaders();
-
-var postgres = builder.AddPostgres("postgres")
-    .WithImage("ankane/pgvector")
-    .WithImageTag("latest")
-    .WithLifetime(ContainerLifetime.Persistent);
-
-var identityDb = postgres.AddDatabase("identityDb");
-var catalogDb = postgres.AddDatabase("catalogDb");
+await builder.InitEnvironmentAsync();
 
 var launchProfileName = GetHttpProtocolNameForEndpoint();
-
+var connectionString = builder.Configuration.GetConnectionString("PostgresConnectionString");
 var identityApi = builder.AddProject<Projects.Identity_API>("identity-api", launchProfileName)
-    .WithExternalHttpEndpoints()
-    .WithReference(identityDb);
+    .WithEnvironment("ConnectionStrings:identityDb", $"{connectionString}Database=identityDb;");
 
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
-    .WithReference(catalogDb);
+    .WithEnvironment("ConnectionStrings:catalogDb", $"{connectionString}Database=catalogDb;");
 
 var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithExternalHttpEndpoints()

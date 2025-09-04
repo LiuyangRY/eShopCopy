@@ -1,4 +1,8 @@
 ﻿using Aspire.Hosting.Lifecycle;
+using Docker.DotNet;
+using Docker.DotNet.Models;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace eShop.AppHost;
 
@@ -13,6 +17,16 @@ internal static class Extensions
     public static IDistributedApplicationBuilder AddForwardedHeaders(this IDistributedApplicationBuilder builder)
     {
         builder.Services.TryAddLifecycleHook<AddForwardHeadersHook>();
+        return builder;
+    }
+
+    /// <summary>
+    /// 初始化环境
+    /// </summary>
+    public static async Task<IDistributedApplicationBuilder> InitEnvironmentAsync(this IDistributedApplicationBuilder builder)
+    {
+        await EnsureDockerContainersReadyAsync();
+        await builder.EnsurePgVectorExtensionReady();
         return builder;
     }
 
@@ -32,5 +46,81 @@ internal static class Extensions
             }
             return Task.CompletedTask;
         }
+    }
+
+    /// <summary>
+    /// 确保docker容器已准备好
+    /// </summary> 
+    private static async Task EnsureDockerContainersReadyAsync()
+    {
+        using var dockerClient = new DockerClientConfiguration().CreateClient();
+
+        // 检查postgres容器
+        var containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters
+        {
+            All = true,
+            Filters = new Dictionary<string, IDictionary<string, bool>>
+            {
+                ["name"] = new Dictionary<string, bool> { ["postgres"] = true }
+            }
+        });
+
+        if (!containers.Any(c => c.State == "running"))
+        {
+            // Search for docker-compose.yml in parent directories
+            string? workingDirectory = null;
+            string? composeFilePath = null;
+            var currentDir = Directory.GetCurrentDirectory();
+            for (int i = 0; i < 5; i++) // search up to 5 parent directories
+            {
+                var candidate = Path.Combine(currentDir, "docker-compose.yml");
+                if (File.Exists(candidate))
+                {
+                    workingDirectory = currentDir;
+                    composeFilePath = candidate;
+                    break;
+                }
+                currentDir = Directory.GetParent(currentDir)?.FullName ?? "";
+                if (string.IsNullOrEmpty(currentDir)) break;
+            }
+            if (composeFilePath == null)
+            {
+                throw new FileNotFoundException("docker-compose.yml 不存在，已查找当前及最多5级父目录。");
+            }
+            // 启动docker-compose
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "docker-compose",
+                    Arguments = "up -d",
+                    WorkingDirectory = workingDirectory!,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// 确保pgvector扩展已准备好 
+    /// </summary>
+    /// <param name="builder">分布式应用程序生成器</param>
+    /// <returns>分布式应用程序生成器</returns>
+    public static async Task<IDistributedApplicationBuilder> EnsurePgVectorExtensionReady(this IDistributedApplicationBuilder builder)
+    {
+        var connectionString = builder.Configuration.GetConnectionString("PostgresConnectionString");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new ArgumentException("数据库连接字符串不能为空");
+        }
+        using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync();
+        using var command = new NpgsqlCommand("CREATE EXTENSION IF NOT EXISTS vector", connection);
+        await command.ExecuteNonQueryAsync();
+        return builder;
     }
 }

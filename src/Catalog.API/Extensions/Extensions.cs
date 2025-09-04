@@ -11,28 +11,28 @@ internal static class Extensions
     /// <summary>
     /// 添加应用程序服务
     /// </summary>
-    public static void AddApplicationServices(this IHostApplicationBuilder builder)
+    public static void AddApplicationServices(this IHostApplicationBuilder hostBuilderer)
     {
-        if (builder.Environment.IsBuild())
+        if (hostBuilderer.Environment.IsBuild())
         {
             // 如果项目是 OpenApi 文档生成启动的，避免加载所有数据库配置和迁移
-            builder.Services.AddDbContext<CatalogContext>();
+            hostBuilderer.Services.AddDbContext<CatalogContext>();
             return;
         }
-        builder.AddNpgsqlDbContext<CatalogContext>("catalogDb", configureDbContextOptions: dbContextOptionsBuilder =>
+        hostBuilderer.AddNpgsqlDbContext<CatalogContext>("catalogDb", configureDbContextOptions: dbContextOptionsBuilder =>
         {
-            dbContextOptionsBuilder.UseNpgsql(optionsBuilder =>
+            dbContextOptionsBuilder.UseNpgsql(hostBuilderer.Configuration.GetConnectionString("catalogDb"), optionsBuilder =>
             {
                 optionsBuilder.UseVector();
             });
         });
-        if (builder.Environment.IsDevelopment())
+        if (hostBuilderer.Environment.IsDevelopment())
         {
-            builder.Services.AddMigration<CatalogContext, CatalogContextSeed>();
+            hostBuilderer.Services.AddMigration<CatalogContext, CatalogContextSeed>();
         }
 
-        builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<CatalogContext>>();
-        builder.Services.AddOptions<CatalogOptions>()
+        hostBuilderer.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<CatalogContext>>();
+        hostBuilderer.Services.AddOptions<CatalogOptions>()
             .BindConfiguration(nameof(CatalogOptions));
     }
 }
