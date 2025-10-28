@@ -1,22 +1,29 @@
 using Common.Constant;
 using eShop.AppHost;
-using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.AddForwardedHeaders();
 await builder.InitEnvironmentAsync();
 
 var launchProfileName = GetHttpProtocolNameForEndpoint();
-var connectionString = builder.Configuration.GetConnectionString("PostgresConnectionString");
+
+var postgresConnection = builder.AddConnectionString("PostgresConnectionString", "PostgresConnectionString");
+var connectionString = await postgresConnection.Resource.GetConnectionStringAsync();
+
 var identityApi = builder.AddProject<Projects.Identity_API>("identity-api", launchProfileName)
-    .WithEnvironment("ConnectionStrings:identityDb", $"{connectionString}Database=identityDb;");
+    .WithReference(postgresConnection)
+    .WithEnvironment("ConnectionStrings__identityDb", $"{connectionString}Database=identityDb;");
 
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
-    .WithEnvironment("ConnectionStrings:catalogDb", $"{connectionString}Database=catalogDb;");
+    .WithReference(postgresConnection)
+    .WithEnvironment("ConnectionStrings__catalogDb", $"{connectionString}Database=catalogDb;");
 
 var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithExternalHttpEndpoints()
-    .WithReference(catalogApi);
+    .WithReference(identityApi)
+    .WithReference(catalogApi)
+    .WaitFor(identityApi)
+    .WaitFor(catalogApi);
 
 // 回调url
 var identityApiUri = identityApi.GetEndpoint(launchProfileName);
@@ -26,6 +33,7 @@ var webAppUri = webApp.GetEndpoint(launchProfileName);
 webApp.WithEnvironment(ServiceConstants.WebApp, webAppUri)
     .WithEnvironment(ServiceConstants.IdentityApiUri, identityApiUri);
 identityApi.WithEnvironment(ServiceConstants.WebApp, webAppUri);
+
 builder.Build().Run();
 
 // 获取终结点HTTP协议名称
