@@ -1,3 +1,5 @@
+version: '3.8'
+name: "eshopcopy"
 services:
   postgres:
     image: ankane/pgvector:latest
@@ -26,13 +28,14 @@ services:
       - "${GRAFANA_PORT}:3000"
     depends_on:
       - prometheus
-      - postgres
     environment:
       TZ: Asia/Shanghai
     networks:
       - monitoring
     volumes:
       - grafana_data:/var/lib/grafana
+      - ../monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ../monitoring/grafana/dashboards:/etc/grafana/dashboards
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "${GRAFANA_URL}:${GRAFANA_PORT}/api/health"]
       interval: 10s
@@ -43,7 +46,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./deploy/prometheus.${ENV}.yaml:/etc/prometheus/prometheus.yml
+      - ../monitoring/prometheus/prometheus.${ENV}.yaml:/etc/prometheus/prometheus.yml
     ports:
       - "${PROMETHEUS_PORT}:9090"
     networks:

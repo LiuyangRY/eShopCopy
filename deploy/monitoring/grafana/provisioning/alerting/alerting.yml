@@ -1,0 +1,16 @@
+apiVersion: 1
+
+# 告警规则配置
+# alert_rules:
+#   # 规则文件路径（相对于Grafana容器内的路径）
+#   - name: 'webapp-alerts'
+#     interval: '1m'
+#     rule_files:
+#       - '/etc/grafana/provisioning/alert_rules/webapp-alerts.yml'
+
+# 通知渠道配置（可选）
+# contact_points:
+#   - name: 'default-email'
+#     type: email
+#     settings:
+#       addresses: "admin@example.com"

@@ -1,0 +1,25 @@
+groups:
+  - name: webapp-monitoring
+    interval: 1m
+    rules:
+      # 服务可用性告警
+      - alert: WebAppServiceDown
+        expr: up{service="webApp"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: webapp
+        annotations:
+          summary: "WebApp服务不可用"
+          description: "WebApp服务已停止运行超过1分钟"
+          
+      # 高CPU使用率告警
+      - alert: WebAppHighCPU
+        expr: sum by(instance) (rate(dotnet_process_cpu_time_seconds_total{job="webApp"}[5m])) > 0.8
+        for: 2m
+        labels:
+          severity: warning
+          service: webapp
+        annotations:
+          summary: "WebApp CPU使用率过高"
+          description: "WebApp CPU使用率超过80%持续2分钟"
