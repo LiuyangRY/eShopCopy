@@ -13,9 +13,9 @@
 		<!-- 提升警告为异常 -->
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-		<Authors>刘杨</Authors>
+		<Authors>Liuyang</Authors>
 		<Company>eShop</Company>
-		<Copyright>刘杨。</Copyright>
+		<Copyright>Liuyang. All rights reserved.</Copyright>
 
 		<!-- 默认引用 -->
 		<ImplicitUsings>enable</ImplicitUsings>
