@@ -94,7 +94,10 @@ internal static class MigrateDbContextExtensions
         using var activity = ActivitySource.StartActivity($"迁移 {typeof(TContext).Name}");
         try
         {
+            var logger = parameter.ServiceProvider.GetRequiredService<ILogger<TContext>>();
+            logger.LogInformation("开始执行数据库迁移...");
             await parameter.Context.Database.MigrateAsync();
+            logger.LogInformation("数据库迁移完成");
             await parameter.Seeder(parameter.Context, parameter.ServiceProvider);
         }
         catch (Exception exception)

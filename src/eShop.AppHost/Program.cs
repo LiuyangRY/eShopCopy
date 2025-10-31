@@ -3,27 +3,24 @@ using eShop.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.AddForwardedHeaders();
-await builder.InitEnvironmentAsync();
 
 var launchProfileName = GetHttpProtocolNameForEndpoint();
 
-var postgresConnection = builder.AddConnectionString("PostgresConnectionString", "PostgresConnectionString");
-var connectionString = await postgresConnection.Resource.GetConnectionStringAsync();
+var identityDbConnection = builder.AddConnectionString("IdentityDb", "ConnectionStrings__IdentityDb");
+var catalogDbConnection = builder.AddConnectionString("CatalogDb", "ConnectionStrings__CatalogDb");
 
 var identityApi = builder.AddProject<Projects.Identity_API>("identity-api", launchProfileName)
-    .WithReference(postgresConnection)
-    .WithEnvironment("ConnectionStrings__identityDb", $"{connectionString}Database=identityDb;");
+    .WithReference(identityDbConnection);
 
-var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
-    .WithReference(postgresConnection)
-    .WithEnvironment("ConnectionStrings__catalogDb", $"{connectionString}Database=catalogDb;");
+var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api", launchProfileName)
+    .WithReference(catalogDbConnection);
 
 var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithExternalHttpEndpoints()
-    .WithReference(identityApi)
-    .WithReference(catalogApi)
     .WaitFor(identityApi)
-    .WaitFor(catalogApi);
+    .WaitFor(catalogApi)
+    .WithReference(identityApi)
+    .WithReference(catalogApi);
 
 // 回调url
 var identityApiUri = identityApi.GetEndpoint(launchProfileName);

@@ -23,7 +23,7 @@ public class ServiceConstants
     /// <summary>
     /// 目录Api链接
     /// </summary>
-    public const string CatalogApiUrl = "http://catalog-api";
+    public const string CatalogApiUrl = "https+http://catalog-api";
     
     /// <summary>
     /// 目录Api版本
